@@ -256,7 +256,8 @@ function check() {
           toolbar.after(shareMsg);
         }
       }
-    });
+    }
+  });
   
   if (isNpointConfigured(state.current) && studentName && confirm('Az eredményed a ranglistára kerül. Folytatod?')) {
     submitScore();
