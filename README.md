@@ -20,26 +20,51 @@ Then open: http://localhost:8000
 
 The `.nojekyll` file prevents GitHub Pages from running the Jekyll processor.
 
-## Leaderboard (npoint.io)
+## Leaderboard & Answer Sharing (npoint.io)
 
-All grading happens entirely in the browser (the `data/*.json` files also contain the correct answers). There is no custom server or backend code. The names, dates, and scores of participants are stored using the free JSON storage service [npoint.io](https://npoint.io), which the client reads and writes directly.
+All grading happens entirely in the browser (the `data/*.json` files also contain the correct answers). There is no custom server or backend code. The app uses the free JSON storage service [npoint.io](https://npoint.io) for two purposes:
 
-### Initial Setup
+1. **Leaderboard**: Stores scores for each worksheet (optional)
+2. **Answer Sharing**: Each "Check" creates a unique URL with the student's answers that can be shared with a tutor
 
-1. Visit the [npoint.io API](https://api.npoint.io/) page, or send a POST request:
-   ```bash
-   curl -X POST https://api.npoint.io/ -H "Content-Type: application/json" -d '[]'
-   ```
-   The response will contain a unique URL (e.g., `https://api.npoint.io/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`).
-2. Copy the received URL as the value of the `NPPOINT_ENDPOINT` variable in the `npoint-config.js` file.
-3. For local testing, start a server (see above), fill out a worksheet, and verify that the Leaderboard button works.
+### Setup Options
+
+**Option A: Per-worksheet endpoints (Recommended)**
+
+Each worksheet can have its own leaderboard endpoint. Add an `npointEndpoint` field to your worksheet JSON:
+
+```json
+{
+  "id": "unique-identifier",
+  "title": "Worksheet Title",
+  "subject": "Subject",
+  "npointEndpoint": "https://api.npoint.io/your-unique-id-here",
+  "tasks": [ ... ]
+}
+```
+
+To create an endpoint for a worksheet:
+```bash
+curl -X POST https://api.npoint.io/ -H "Content-Type: application/json" -d '[]'
+```
+Copy the returned URL and add it to your worksheet.
+
+**Option B: Default central endpoint**
+
+If a worksheet doesn't have an `npointEndpoint`, the app falls back to `DEFAULT_NPOINT_ENDPOINT` in `npoint-config.js`.
+
+Set it in `npoint-config.js`:
+```javascript
+const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/your-default-id";
+```
 
 ### How It Works
 
-- The name entered in the name field at the top of the worksheet is saved by the browser (`localStorage`), and after every **Check** operation, the scores for automatically gradable tasks are sent to npoint.io (open, self-assessed tasks are not included).
-- The **Leaderboard** button shows the top 20 submissions for the current worksheet, sorted by score in descending order.
-- If `npoint-config.js` is not filled in, filling out and grading worksheets works the same way, but the leaderboard will indicate that it is not configured.
-- npoint.io is a free service, but you need to share the URL with others if you want to use the leaderboard collaboratively.
+- **Answer Sharing**: When a student clicks **Check**, their answers are saved to a new npoint.io document. A unique URL appears that they can copy and send to their tutor. These URLs are also saved in `localStorage` under "Beküldött feladatok" (Submitted worksheets) for later access.
+
+- **Leaderboard**: The name entered at the top of the worksheet is saved by the browser (`localStorage`). If the worksheet has a configured endpoint and the student confirms, their score is sent to npoint.io. The **Leaderboard** button shows the top 20 submissions for the current worksheet, sorted by score.
+
+- npoint.io is a free service. Each worksheet with a configured endpoint has an independent leaderboard with no race conditions between different worksheets.
 
 ## Adding a New Worksheet
 
@@ -55,11 +80,15 @@ All grading happens entirely in the browser (the `data/*.json` files also contai
   "subject": "Subject",
   "grade": 8,
   "description": "Brief description (optional).",
+  "npointEndpoint": "https://api.npoint.io/your-unique-id-here",
   "tasks": [ ... ]
 }
 ```
 
 The `id` also appears in the URL (`#/unique-identifier`) and is the key for saved answers, so it should be unique and not change.
+
+**Optional Fields:**
+- `npointEndpoint`: Unique npoint.io URL for this worksheet's leaderboard. If not provided, falls back to `DEFAULT_NPOINT_ENDPOINT`.
 
 ### Task Types
 
@@ -97,7 +126,9 @@ Every task has `title`, `instruction`, optional `hint`, `type`, and `items` fiel
 
 ## Features
 
-- **Check**: grades automatically gradable tasks, shows sample solutions for open-ended ones.
+- **Check**: grades automatically gradable tasks, shows sample solutions for open-ended ones, and creates a shareable URL with all answers.
 - **Solutions**: shows all solutions.
 - **Start Over**: clears answers for the current worksheet.
+- **Beküldött feladatok** (Submitted worksheets): view all your previously submitted answer URLs for the current worksheet.
 - Answers are saved in the browser's `localStorage`, per worksheet.
+- Answer URLs are also stored in `localStorage` so students can return later and resend them.
