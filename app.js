@@ -258,7 +258,7 @@ function check() {
     });
   }
   
-  if (isNpointConfigured() && studentName && confirm('Az eredményed a ranglistára kerül. Folytatod?')) {
+  if (isNpointConfigured(state.current) && studentName && confirm('Az eredményed a ranglistára kerül. Folytatod?')) {
     submitScore();
   }
   document.getElementById('score').scrollIntoView({ block: 'nearest' });
@@ -285,7 +285,7 @@ function updateScore() {
 }
 
 function submitScore() {
-  if (!isNpointConfigured()) return;
+  if (!isNpointConfigured(state.current)) return;
   const name = getName().trim();
   if (!name) return;
   const { auto, autoOk } = computeScore();
@@ -295,6 +295,7 @@ function submitScore() {
     name: name.slice(0, 60),
     score: autoOk,
     max: auto
+  }, state.current)
   }).then(() => loadLeaderboard()).catch(err => console.error('Ranglista mentése sikertelen:', err));
 }
 
@@ -320,8 +321,8 @@ async function loadLeaderboard() {
   const status = document.getElementById('leaderboard-status');
   const list = document.getElementById('leaderboard-list');
   if (!status || !list) return;
-  if (!isNpointConfigured()) {
-    status.textContent = 'A ranglista nincs beállítva (töltsd ki a npoint-config.js fájlt).';
+  if (!isNpointConfigured(state.current)) {
+    status.textContent = 'A ranglista nincs beállítva a feladatlaphoz (add npointEndpoint a JSON-hez).';
     list.replaceChildren();
     return;
   }
@@ -329,7 +330,7 @@ async function loadLeaderboard() {
   list.replaceChildren();
   
   try {
-    const submissions = await loadSubmissionsFromNpoint(state.current.id);
+    const submissions = await loadSubmissionsFromNpoint(state.current);
     
     if (!submissions || submissions.length === 0) {
       status.textContent = 'Még senki nem töltötte ki ezt a feladatlapot.';

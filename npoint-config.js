@@ -1,32 +1,38 @@
 // npoint.io configuration for storing leaderboard submissions
 // 
-// To set up:
-// 1. Create a new document at https://api.npoint.io/ (POST an empty array: [])
-// 2. Copy the returned URL and assign it to NPPOINT_ENDPOINT below
-// 3. The document should be an array of submission objects
+// Each worksheet can have its own endpoint stored in the worksheet JSON file
+// as `npointEndpoint`. Alternatively, set a default central endpoint below.
 //
-// Example setup:
+// To create an endpoint for a worksheet:
 //   POST to https://api.npoint.io/ with body: []
-//   You'll get a URL like: https://api.npoint.io/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-//   Set NPPOINT_ENDPOINT to that URL
+//   Copy the returned URL (e.g., https://api.npoint.io/xxxx-xxxx)
+//   Add it to your worksheet JSON: "npointEndpoint": "https://api.npoint.io/xxxx-xxxx"
 
-const NPPOINT_ENDPOINT = "https://api.npoint.io/7709d03254d67966f97f";  // e.g., "https://api.npoint.io/xxxx-xxxx"
+// Default endpoint (used if worksheet doesn't have its own)
+const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/7709d03254d67966f97f";  // e.g., "https://api.npoint.io/xxxx-xxxx"
+
+// Get endpoint for a specific worksheet
+function getEndpointForWorksheet(worksheet) {
+  return worksheet?.npointEndpoint || DEFAULT_NPOINT_ENDPOINT;
+}
 
 // Helper to check if npoint.io is configured
-const isNpointConfigured = () => {
-  return NPPOINT_ENDPOINT !== "YOUR_NPOINT_URL_HERE" && NPPOINT_ENDPOINT;
-};
+function isNpointConfigured(worksheet) {
+  const endpoint = getEndpointForWorksheet(worksheet);
+  return endpoint && endpoint !== "YOUR_NPOINT_URL_HERE";
+}
 
 // Submit a new submission to the leaderboard
-async function submitToNpoint(submission) {
-  if (!isNpointConfigured()) {
-    console.warn('npoint.io is not configured. Set NPPOINT_ENDPOINT in npoint-config.js');
+async function submitToNpoint(submission, worksheet) {
+  const endpoint = getEndpointForWorksheet(worksheet);
+  if (!isNpointConfigured(worksheet)) {
+    console.warn('npoint.io is not configured for this worksheet. Add npointEndpoint to the worksheet JSON.');
     return;
   }
 
   try {
     // First, get current submissions
-    const response = await fetch(NPPOINT_ENDPOINT);
+    const response = await fetch(endpoint);
     let submissions = [];
     
     if (response.ok) {
@@ -44,7 +50,7 @@ async function submitToNpoint(submission) {
     submissions.push(newSubmission);
 
     // Post updated array back
-    const postResponse = await fetch(NPPOINT_ENDPOINT, {
+    const postResponse = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -98,13 +104,14 @@ async function saveAnswersToNpoint(worksheet, answers, studentName) {
 }
 
 // Load submissions for a specific worksheet
-async function loadSubmissionsFromNpoint(worksheetId) {
-  if (!isNpointConfigured()) {
+async function loadSubmissionsFromNpoint(worksheet) {
+  const endpoint = getEndpointForWorksheet(worksheet);
+  if (!isNpointConfigured(worksheet)) {
     return null;
   }
 
   try {
-    const response = await fetch(NPPOINT_ENDPOINT);
+    const response = await fetch(endpoint);
     if (!response.ok) {
       throw new Error(`Failed to load: ${response.status}`);
     }
@@ -114,9 +121,8 @@ async function loadSubmissionsFromNpoint(worksheetId) {
       return [];
     }
 
-    // Filter by worksheet and sort
+    // Sort by score descending, then by date ascending
     return submissions
-      .filter(s => s.worksheetId === worksheetId)
       .sort((a, b) => b.score - a.score || new Date(a.createdAt) - new Date(b.createdAt))
       .slice(0, 20); // Limit to top 20
   } catch (err) {
