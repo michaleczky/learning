@@ -1,4 +1,5 @@
-[
-  "nyelvtan-szoszerkezetek-1.json",
-  "nyelvtan-szoszerkezetek-2.json"
-]
+{
+  "Magyar nyelvtan": [
+    "nyelvtan-szoszerkezetek-2.json"
+  ]
+}

@@ -57,7 +57,9 @@ function setName(value) {
 }
 
 async function loadWorksheets() {
-  const files = await fetch('data/index.json').then(r => r.json());
+  const index = await fetch('data/index.json').then(r => r.json());
+  // Handle both array format and taxonomy (object) format
+  const files = Array.isArray(index) ? index : Object.values(index).flat();
   const sheets = await Promise.all(files.map(f => fetch(`data/${f}`).then(r => r.json())));
   state.worksheets = sheets;
 }
