@@ -94,6 +94,7 @@ export default {
     }
   },
   methods: {
+    itemKey,
     rich,
     computeScore() {
       let auto = 0, autoOk = 0, open = 0, openOk = 0;
