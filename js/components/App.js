@@ -15,6 +15,14 @@ export default {
       currentWorksheet: null
     };
   },
+  watch: {
+    worksheets: {
+      immediate: true,
+      handler() {
+        this.route();
+      }
+    }
+  },
   created() {
     this.loadWorksheets();
     this.setupRouting();
@@ -34,17 +42,17 @@ export default {
       }
     },
     setupRouting() {
-      const route = () => {
-        const id = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
-        if (!id) {
-          this.currentWorksheet = null;
-          return;
-        }
-        const ws = this.worksheets.find(w => w.id === id);
-        this.currentWorksheet = ws || null;
-      };
-      window.addEventListener('hashchange', route);
-      route();
+      window.addEventListener('hashchange', this.route);
+      this.route();
+    },
+    route() {
+      const id = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
+      if (!id) {
+        this.currentWorksheet = null;
+        return;
+      }
+      const ws = this.worksheets.find(w => w.id === id);
+      this.currentWorksheet = ws || null;
     }
   }
 };
