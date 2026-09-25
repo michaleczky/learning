@@ -2,6 +2,7 @@ import TaskItem from './TaskItem.js';
 import LeaderboardPanel from './LeaderboardPanel.js';
 import SubmissionsPanel from './SubmissionsPanel.js';
 import { loadAnswers, saveAnswers, getName, setName, loadSubmissions, saveSubmission, rich, isCorrect, answerText, itemKey } from '../utils.js';
+import { saveAnswersToNpoint, submitToNpoint, isNpointConfigured } from '../../npoint-config.js';
 
 export default {
   components: { TaskItem, LeaderboardPanel, SubmissionsPanel },
@@ -123,7 +124,7 @@ export default {
       
       // Save answers to npoint.io
       const name = this.studentName.trim() || 'Anonymous';
-      window.saveAnswersToNpoint(this.worksheet, this.answers, name).then(url => {
+      saveAnswersToNpoint(this.worksheet, this.answers, name).then(url => {
         if (url) {
           saveSubmission(this.worksheet.id, url, name);
           if (name !== 'Anonymous') {
@@ -132,18 +133,18 @@ export default {
         }
       });
 
-      if (window.isNpointConfigured(this.worksheet) && this.studentName.trim() && 
+      if (isNpointConfigured(this.worksheet) && this.studentName.trim() && 
           confirm('Az eredményed a ranglistára kerül. Folytatod?')) {
         this.submitScore();
       }
     },
     submitScore() {
-      if (!window.isNpointConfigured(this.worksheet)) return;
+      if (!isNpointConfigured(this.worksheet)) return;
       const name = this.studentName.trim();
       if (!name) return;
       const { auto, autoOk } = this.computeScore();
       if (auto === 0) return;
-      window.submitToNpoint({
+      submitToNpoint({
         worksheetId: this.worksheet.id,
         name: name.slice(0, 60),
         score: autoOk,

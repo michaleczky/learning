@@ -1,3 +1,5 @@
+import { isNpointConfigured, loadSubmissionsFromNpoint } from '../../npoint-config.js';
+
 export default {
   template: `
     <section class="leaderboard-panel hidden" ref="panel">
@@ -23,7 +25,7 @@ export default {
   },
   methods: {
     async loadLeaderboard() {
-      if (!window.isNpointConfigured(this.worksheet)) {
+      if (!isNpointConfigured(this.worksheet)) {
         this.statusMessage = 'A ranglista nincs beállítva a feladatlaphoz (add npointEndpoint a JSON-hez).';
         this.submissions = [];
         return;
@@ -31,7 +33,7 @@ export default {
       this.statusMessage = 'Betöltés…';
       this.isLoading = true;
       try {
-        const submissions = await window.loadSubmissionsFromNpoint(this.worksheet);
+        const submissions = await loadSubmissionsFromNpoint(this.worksheet);
         if (!submissions || submissions.length === 0) {
           this.statusMessage = 'Még senki nem töltötte ki ezt a feladatlapot.';
           this.submissions = [];

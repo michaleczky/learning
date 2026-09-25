@@ -1,3 +1,5 @@
+import { loadSubmissions } from '../utils.js';
+
 export default {
   template: `
     <section class="submissions-panel hidden" ref="panel">
@@ -31,7 +33,7 @@ export default {
   },
   methods: {
     loadSubmissions() {
-      const allSubmissions = window.loadSubmissions();
+      const allSubmissions = loadSubmissions();
       this.submissions = allSubmissions[this.worksheetId] || [];
       if (this.submissions.length === 0) {
         this.statusMessage = 'Még nem küldtél be válaszokat ehez a feladatlaphoz.';

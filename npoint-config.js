@@ -9,21 +9,21 @@
 //   Add it to your worksheet JSON: "npointEndpoint": "https://api.npoint.io/xxxx-xxxx"
 
 // Default endpoint (used if worksheet doesn't have its own)
-const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/7709d03254d67966f97f";  // e.g., "https://api.npoint.io/xxxx-xxxx"
+export const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/7709d03254d67966f97f";  // e.g., "https://api.npoint.io/xxxx-xxxx"
 
 // Get endpoint for a specific worksheet
-function getEndpointForWorksheet(worksheet) {
+export function getEndpointForWorksheet(worksheet) {
   return worksheet?.npointEndpoint || DEFAULT_NPOINT_ENDPOINT;
 }
 
 // Helper to check if npoint.io is configured
-function isNpointConfigured(worksheet) {
+export function isNpointConfigured(worksheet) {
   const endpoint = getEndpointForWorksheet(worksheet);
   return endpoint && endpoint !== "YOUR_NPOINT_URL_HERE";
 }
 
 // Submit a new submission to the leaderboard
-async function submitToNpoint(submission, worksheet) {
+export async function submitToNpoint(submission, worksheet) {
   const endpoint = getEndpointForWorksheet(worksheet);
   if (!isNpointConfigured(worksheet)) {
     console.warn('npoint.io is not configured for this worksheet. Add npointEndpoint to the worksheet JSON.');
@@ -71,7 +71,7 @@ async function submitToNpoint(submission, worksheet) {
 
 // Save student answers to a new npoint.io document and return the URL
 // Returns the URL where the answers are stored, or null on error
-async function saveAnswersToNpoint(worksheet, answers, studentName) {
+export async function saveAnswersToNpoint(worksheet, answers, studentName) {
   try {
     const data = {
       worksheetId: worksheet.id,
@@ -104,7 +104,7 @@ async function saveAnswersToNpoint(worksheet, answers, studentName) {
 }
 
 // Load submissions for a specific worksheet
-async function loadSubmissionsFromNpoint(worksheet) {
+export async function loadSubmissionsFromNpoint(worksheet) {
   const endpoint = getEndpointForWorksheet(worksheet);
   if (!isNpointConfigured(worksheet)) {
     return null;
