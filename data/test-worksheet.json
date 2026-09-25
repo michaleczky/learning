@@ -1,0 +1,44 @@
+{
+  "id": "test-worksheet",
+  "title": "Test Worksheet",
+  "subject": "Test",
+  "grade": 1,
+  "description": "A simple test worksheet for local testing.",
+  "tasks": [
+    {
+      "title": "Test - Multiple Choice",
+      "instruction": "Select the correct answer.",
+      "type": "choice",
+      "options": ["Yes", "No", "Maybe"],
+      "items": [
+        { "text": "Is the sky blue?", "answer": "Yes" },
+        { "text": "Is water dry?", "answer": "No" }
+      ]
+    },
+    {
+      "title": "Test - Text Input",
+      "instruction": "Type your answer.",
+      "type": "text",
+      "items": [
+        { "text": "What is 2 + 2?", "answer": ["4", "four"] }
+      ]
+    },
+    {
+      "title": "Test - Select",
+      "instruction": "Choose from the dropdown.",
+      "type": "select",
+      "options": ["Red", "Green", "Blue"],
+      "items": [
+        { "text": "What color is grass?", "answer": "Green" }
+      ]
+    },
+    {
+      "title": "Test - Open Question",
+      "instruction": "Write a short answer.",
+      "type": "open",
+      "items": [
+        { "text": "Describe your favorite animal.", "solution": "Example: *I like dogs because they are friendly.*" }
+      ]
+    }
+  ]
+}

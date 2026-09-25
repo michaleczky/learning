@@ -1,5 +1,8 @@
 {
   "Magyar nyelvtan": [
     "nyelvtan-szoszerkezetek-2.json"
+  ],
+  "Test": [
+    "test-worksheet.json"
   ]
 }
