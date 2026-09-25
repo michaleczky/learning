@@ -215,7 +215,9 @@ function check() {
   });
 
   updateScore();
-  submitScore();
+  if (isNpointConfigured() && getName().trim() && confirm('Az eredményed a ranglistára kerül. Folytatod?')) {
+    submitScore();
+  }
   document.getElementById('score').scrollIntoView({ block: 'nearest' });
 }
 
