@@ -27,7 +27,7 @@ export default {
         </div>
       </div>
       
-      <div v-for="(task, ti) in worksheet.tasks" :key="ti" class="task">
+      <div v-for="(task, ti) in worksheet.tasks" :key="taskKey(task, ti)" class="task">
         <h2>{{ task.title }}</h2>
         <p class="instruction" v-html="rich(task.instruction)"></p>
         <p v-if="task.hint" class="hint" v-html="rich(task.hint)"></p>
@@ -39,6 +39,8 @@ export default {
             :ti="ti" 
             :ii="ii" 
             :answers="answers" 
+            :checked="checked" 
+            :revealed="revealed" 
             @save="onSaveAnswer"
           />
         </ol>
@@ -101,6 +103,9 @@ export default {
     getItemKey(ti, ii) {
       return itemKey(ti, ii);
     },
+    taskKey(task, ti) {
+      return `${task.title || 'task'}-${ti}`;
+    },
     rich,
     computeScore() {
       let auto = 0, autoOk = 0, open = 0, openOk = 0;
@@ -159,20 +164,10 @@ export default {
       this.$refs.leaderboard.loadLeaderboard();
     },
     toggleLeaderboard() {
-      const panel = this.$refs.leaderboard.$el;
-      panel.classList.toggle('hidden');
-      if (!panel.classList.contains('hidden')) {
-        this.loadLeaderboard();
-        panel.scrollIntoView({ block: 'nearest' });
-      }
+      this.$refs.leaderboard.toggle();
     },
     toggleSubmissions() {
-      const panel = this.$refs.submissions.$el;
-      panel.classList.toggle('hidden');
-      if (!panel.classList.contains('hidden')) {
-        this.$refs.submissions.loadSubmissions();
-        panel.scrollIntoView({ block: 'nearest' });
-      }
+      this.$refs.submissions.toggle();
     },
     reveal() {
       this.revealed = true;
@@ -185,6 +180,8 @@ export default {
     reset() {
       if (!confirm('Törlöd az összes válaszodat ezen a feladatlapon?')) return;
       this.answers = {};
+      this.checked = false;
+      this.revealed = false;
       saveAnswers(this.worksheet.id, this.answers);
     }
   }

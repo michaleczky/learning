@@ -8,8 +8,9 @@
 //   Copy its API URL (e.g., https://api.npoint.io/xxxx-xxxx)
 //   Add it to your worksheet JSON: "npointEndpoint": "https://api.npoint.io/xxxx-xxxx"
 
-// Default endpoint (used if worksheet doesn't have its own)
-export const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/7709d03254d67966f97f";  // e.g., "https://api.npoint.io/xxxx-xxxx"
+// Default endpoint (used if worksheet doesn't have its own). Leave empty to
+// disable the leaderboard for worksheets without an npointEndpoint.
+export const DEFAULT_NPOINT_ENDPOINT = "";
 
 // Get endpoint for a specific worksheet
 export function getEndpointForWorksheet(worksheet) {
@@ -18,8 +19,7 @@ export function getEndpointForWorksheet(worksheet) {
 
 // Helper to check if npoint.io is configured
 export function isNpointConfigured(worksheet) {
-  const endpoint = getEndpointForWorksheet(worksheet);
-  return endpoint && endpoint !== "YOUR_NPOINT_URL_HERE";
+  return !!getEndpointForWorksheet(worksheet);
 }
 
 // Submit a new submission to the leaderboard
@@ -69,34 +69,15 @@ export async function submitToNpoint(submission, worksheet) {
   }
 }
 
-// Fetch the CSRF token npoint.io requires for document creation.
-// The token lives in a meta tag on the homepage; the API allows cross-origin
-// reads (Access-Control-Allow-Origin: *), so this works from the browser.
-async function fetchNpointCsrfToken() {
-  const response = await fetch('https://www.npoint.io/');
-  if (!response.ok) {
-    throw new Error(`Failed to load npoint.io: ${response.status}`);
-  }
-  const html = await response.text();
-  const match = html.match(/name="csrf-token" content="([^"]+)"/);
-  if (!match) {
-    throw new Error('CSRF token not found on npoint.io homepage');
-  }
-  return match[1];
-}
-
 // Create a new empty npoint.io document and return its API URL.
 // Note: POSTing to https://api.npoint.io/ does NOT create documents (it
-// returns 500). Documents are created via the website's own route.
+// returns 500). Documents are created via the website's own route, which
+// needs no authentication or CSRF token.
 async function createNpointDocument() {
-  const csrfToken = await fetchNpointCsrfToken();
-
   const response = await fetch('https://www.npoint.io/documents', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRF-Token': csrfToken,
-      'X-Requested-With': 'XMLHttpRequest'
     },
     body: JSON.stringify({})
   });

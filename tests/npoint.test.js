@@ -18,7 +18,7 @@ describe('saveAnswersToNpoint', () => {
     const url = await cfg.saveAnswersToNpoint(worksheet, { '0-0': 'Yes' }, 'Anna');
 
     expect(url).toBe('https://api.npoint.io/created1');
-    expect(captures.createdDocuments[0].csrfToken).toBe('tok123');
+    expect(captures.createdDocuments).toEqual([{}]);
 
     const saved = captures.savedBodies[0];
     expect(saved.worksheetId).toBe('ws1');
@@ -84,5 +84,11 @@ describe('endpoint configuration', () => {
     expect(cfg.getEndpointForWorksheet({ id: 'x' })).toBe(cfg.DEFAULT_NPOINT_ENDPOINT);
     expect(cfg.getEndpointForWorksheet(worksheet)).toBe('https://api.npoint.io/ep1');
     expect(cfg.isNpointConfigured(worksheet)).toBe(true);
+  });
+
+  it('reports worksheets without an endpoint as unconfigured', () => {
+    expect(cfg.DEFAULT_NPOINT_ENDPOINT).toBe('');
+    expect(cfg.isNpointConfigured({ id: 'x' })).toBe(false);
+    expect(cfg.isNpointConfigured(null)).toBe(false);
   });
 });

@@ -27,6 +27,9 @@ export default {
     this.loadWorksheets();
     this.setupRouting();
   },
+  unmounted() {
+    window.removeEventListener('hashchange', this.route);
+  },
   methods: {
     async loadWorksheets() {
       try {

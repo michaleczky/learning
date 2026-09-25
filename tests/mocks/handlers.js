@@ -1,5 +1,4 @@
 // MSW handlers for the npoint.io API, mirroring the real endpoints:
-//   GET  https://www.npoint.io/            -> homepage HTML with CSRF meta tag
 //   POST https://www.npoint.io/documents   -> creates a document, returns api_url
 //   POST https://api.npoint.io/<id>        -> writes document contents
 //   GET/POST https://api.npoint.io/ep1     -> per-worksheet leaderboard endpoint
@@ -7,7 +6,7 @@
 import { http, HttpResponse } from 'msw';
 
 export const captures = {
-  createdDocuments: [], // headers sent to POST /documents
+  createdDocuments: [], // bodies POSTed to /documents
   savedBodies: [],      // bodies POSTed to created documents
   leaderboardPosts: []  // bodies POSTed to the leaderboard endpoint
 };
@@ -23,12 +22,8 @@ export const leaderboardItems = [
 ];
 
 export const npointHandlers = [
-  http.get('https://www.npoint.io/', () =>
-    HttpResponse.html('<meta name="csrf-token" content="tok123">')
-  ),
-
-  http.post('https://www.npoint.io/documents', ({ request }) => {
-    captures.createdDocuments.push({ csrfToken: request.headers.get('X-CSRF-Token') });
+  http.post('https://www.npoint.io/documents', async ({ request }) => {
+    captures.createdDocuments.push(await request.json());
     return HttpResponse.json({ api_url: 'https://api.npoint.io/created1' });
   }),
 

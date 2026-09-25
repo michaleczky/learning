@@ -58,11 +58,11 @@ Each worksheet can have its own leaderboard endpoint. Add an `npointEndpoint` fi
 }
 ```
 
-To create an endpoint for a worksheet, create a new document in the editor at [npoint.io](https://www.npoint.io), then copy its API URL (e.g. `https://api.npoint.io/xxxx-xxxx`) and add it to your worksheet. (Documents cannot be created by POSTing to the npoint API itself.)
+To create an endpoint for a worksheet, create a new document in the editor at [npoint.io](https://www.npoint.io), then copy its API URL (e.g. `https://api.npoint.io/xxxx-xxxx`) and add it to your worksheet.
 
 **Option B: Default central endpoint**
 
-If a worksheet doesn't have an `npointEndpoint`, the app falls back to `DEFAULT_NPOINT_ENDPOINT` in `public/npoint-config.js`.
+If a worksheet doesn't have an `npointEndpoint`, the app falls back to `DEFAULT_NPOINT_ENDPOINT` in `public/npoint-config.js` (empty by default — worksheets without an endpoint simply have no leaderboard).
 
 Set it in `public/npoint-config.js`:
 ```javascript

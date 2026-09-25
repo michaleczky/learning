@@ -10,6 +10,8 @@ import { resetCaptures } from './mocks/handlers.js';
 // jsdom's Storage inside the test environment; swap in a working one.
 globalThis.localStorage = new JSDOM('', { url: 'http://localhost:8000/' }).window.localStorage;
 globalThis.confirm = () => true;
+// jsdom does not implement scrollIntoView; panels call it when toggled open.
+globalThis.HTMLElement.prototype.scrollIntoView = () => {};
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'error' });
