@@ -215,7 +215,31 @@ function check() {
   });
 
   updateScore();
-  if (isNpointConfigured() && getName().trim() && confirm('Az eredményed a ranglistára kerül. Folytatod?')) {
+  
+  // Save answers to a separate npoint.io document and show URL to student
+  const studentName = getName().trim();
+  if (studentName) {
+    saveAnswersToNpoint(state.current, state.answers, studentName).then(url => {
+      if (url) {
+        const shareMsg = h('div', { class: 'share-url', id: 'share-url' },
+          h('p', {}, 'A válaszaid elmentésre kerültek. Ez a linket küld el a tanárodnak:'),
+          h('input', { 
+            type: 'text', 
+            value: url, 
+            readonly: true,
+            onclick: e => { e.target.select(); navigator.clipboard.writeText(url); }
+          })
+        );
+        // Insert share message after the toolbar
+        const toolbar = document.querySelector('.toolbar');
+        if (toolbar && !document.getElementById('share-url')) {
+          toolbar.after(shareMsg);
+        }
+      }
+    });
+  }
+  
+  if (isNpointConfigured() && studentName && confirm('Az eredményed a ranglistára kerül. Folytatod?')) {
     submitScore();
   }
   document.getElementById('score').scrollIntoView({ block: 'nearest' });
