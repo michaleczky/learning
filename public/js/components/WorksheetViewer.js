@@ -77,11 +77,14 @@ export default {
     studentName(newVal) {
       setName(newVal);
     },
-    worksheet(newVal) {
-      if (newVal) {
-        this.answers = loadAnswers(newVal.id);
-        this.checked = false;
-        this.revealed = false;
+    worksheet: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          this.answers = loadAnswers(newVal.id);
+          this.checked = false;
+          this.revealed = false;
+        }
       }
     }
   },
