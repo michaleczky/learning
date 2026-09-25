@@ -10,7 +10,7 @@
 //   You'll get a URL like: https://api.npoint.io/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 //   Set NPPOINT_ENDPOINT to that URL
 
-const NPPOINT_ENDPOINT = "https://www.npoint.io/docs/7709d03254d67966f97f";  // e.g., "https://api.npoint.io/xxxx-xxxx"
+const NPPOINT_ENDPOINT = "https://api.npoint.io/7709d03254d67966f97f";  // e.g., "https://api.npoint.io/xxxx-xxxx"
 
 // Helper to check if npoint.io is configured
 const isNpointConfigured = () => {

@@ -16,7 +16,7 @@ Then open: http://localhost:8000
 
 1. Push the repository to GitHub.
 2. In the repository settings (Settings → Pages), select the `main` branch and the `/ (root)` folder.
-3. The site will be available at `https://<username>.github.io/<repo>/`.
+3. The site will be available at `https://michaleczky.github.io/learning/`.
 
 The `.nojekyll` file prevents GitHub Pages from running the Jekyll processor.
 
