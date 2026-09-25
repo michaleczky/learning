@@ -1,21 +1,36 @@
 # Practice Worksheets
 
-A static HTML + JS website for school practice worksheets. Worksheets are JSON files in the `data/` directory, which the page loads and makes fillable. No build step required, no dependencies.
+A static HTML + JS website for school practice worksheets. Worksheets are JSON files in the `public/data/` directory, which the page loads and makes fillable. No build step required, no dependencies.
+
+## Repository Layout
+
+- `public/` – the published website (deployed to GitHub Pages by `.github/workflows/deploy.yml`)
+- `tests/` – Vue component integration tests (not published)
 
 ## Running Locally
 
 The browser doesn't allow loading JSON files from `file://` protocol, so you need a local server:
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 --directory public
 ```
 
 Then open: http://localhost:8000
 
+## Testing
+
+Integration tests live in `tests/`. They use Vitest with @vue/test-utils (jsdom) to mount the real components, and MSW (Mock Service Worker) to mock all npoint.io API calls — no real requests are made:
+
+```bash
+cd tests && npm install && npm test
+```
+
 ## Publishing on GitHub Pages
 
+The site is deployed by the "Deploy to Pages" workflow (`.github/workflows/deploy.yml`), which publishes only the `public/` folder on every push to `main`.
+
 1. Push the repository to GitHub.
-2. In the repository settings (Settings → Pages), select the `main` branch and the `/ (root)` folder.
+2. In the repository settings (Settings → Pages), set Source to **GitHub Actions** (once).
 3. The site will be available at `https://michaleczky.github.io/learning/`.
 
 The `.nojekyll` file prevents GitHub Pages from running the Jekyll processor.
@@ -43,17 +58,13 @@ Each worksheet can have its own leaderboard endpoint. Add an `npointEndpoint` fi
 }
 ```
 
-To create an endpoint for a worksheet:
-```bash
-curl -X POST https://api.npoint.io/ -H "Content-Type: application/json" -d '[]'
-```
-Copy the returned URL and add it to your worksheet.
+To create an endpoint for a worksheet, create a new document in the editor at [npoint.io](https://www.npoint.io), then copy its API URL (e.g. `https://api.npoint.io/xxxx-xxxx`) and add it to your worksheet. (Documents cannot be created by POSTing to the npoint API itself.)
 
 **Option B: Default central endpoint**
 
-If a worksheet doesn't have an `npointEndpoint`, the app falls back to `DEFAULT_NPOINT_ENDPOINT` in `npoint-config.js`.
+If a worksheet doesn't have an `npointEndpoint`, the app falls back to `DEFAULT_NPOINT_ENDPOINT` in `public/npoint-config.js`.
 
-Set it in `npoint-config.js`:
+Set it in `public/npoint-config.js`:
 ```javascript
 const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/your-default-id";
 ```
@@ -68,8 +79,8 @@ const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/your-default-id";
 
 ## Adding a New Worksheet
 
-1. Create a new JSON file in the `data/` directory (see the format below).
-2. Add the filename to the list in `data/index.json`.
+1. Create a new JSON file in the `public/data/` directory (see the format below).
+2. Add the filename to the list in `public/data/index.json`.
 
 ## Worksheet Format
 
