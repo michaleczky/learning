@@ -9,12 +9,12 @@ export default {
           {{ opt }}
         </label>
       </div>
-      <select v-else-if="task.type === 'select'" v-model="selectedValue">
+      <select v-else-if="task.type === 'select'" class="form-select" v-model="selectedValue">
         <option value="">– válassz –</option>
         <option v-for="opt in task.options" :key="opt" :value="opt">{{ opt }}</option>
       </select>
-      <input v-else-if="task.type === 'text'" type="text" v-model="selectedValue" autocomplete="off" />
-      <textarea v-else-if="task.type === 'open'" v-model="selectedValue"></textarea>
+      <input v-else-if="task.type === 'text'" type="text" class="form-control" v-model="selectedValue" autocomplete="off" />
+      <textarea v-else-if="task.type === 'open'" class="form-control" v-model="selectedValue"></textarea>
       <p v-else class="error">Ismeretlen feladattípus: {{ task.type }}</p>
     </div>
   `,

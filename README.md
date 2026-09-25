@@ -1,6 +1,6 @@
 # Practice Worksheets
 
-A static HTML + JS website for school practice worksheets. Worksheets are JSON files in the `public/data/` directory, which the page loads and makes fillable. No build step required, no dependencies.
+A static HTML + JS website for school practice worksheets. Worksheets are JSON files in the `public/data/` directory, which the page loads and makes fillable. No build step required. The UI is based on [Bootstrap 5](https://getbootstrap.com), loaded from a CDN; `public/style.css` only adds the app-specific layout on top of it.
 
 ## Repository Layout
 
@@ -137,6 +137,7 @@ Every task has `title`, `instruction`, optional `hint`, `type`, and `items` fiel
 
 ## Features
 
+- The worksheet page has three tabs: **Feladatlap** (the tasks), **Ranglista** (leaderboard), and **Beküldött feladatok** (submitted worksheets).
 - **Check**: grades automatically gradable tasks, shows sample solutions for open-ended ones, and creates a shareable URL with all answers.
 - **Solutions**: shows all solutions.
 - **Start Over**: clears answers for the current worksheet.

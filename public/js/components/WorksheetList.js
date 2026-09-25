@@ -9,11 +9,13 @@ export default {
         <h3>{{ subject }}</h3>
         <div class="card-list">
           <a v-for="ws in group" :key="ws.id" :href="'#/' + ws.id" class="card">
-            <div class="title">{{ ws.title }}</div>
-            <div class="desc">
-              <span v-if="ws.grade">{{ ws.grade }}. osztály</span>
-              <span v-if="ws.grade && ws.description"> · </span>
-              <span>{{ ws.description }}</span>
+            <div class="card-body">
+              <div class="title">{{ ws.title }}</div>
+              <div class="desc">
+                <span v-if="ws.grade">{{ ws.grade }}. osztály</span>
+                <span v-if="ws.grade && ws.description"> · </span>
+                <span>{{ ws.description }}</span>
+              </div>
             </div>
           </a>
         </div>

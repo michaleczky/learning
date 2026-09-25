@@ -130,37 +130,60 @@ describe('WorksheetViewer feedback and solutions', () => {
   });
 });
 
-describe('WorksheetViewer panel toggling', () => {
-  it('toggles the leaderboard panel through reactive state', async () => {
+// Tab pages are shown/hidden through v-show wrappers around the task list
+// and the panels. jsdom caches getComputedStyle results per element, so
+// Vue Test Utils' isVisible() returns stale values when a v-show changed
+// after a previous visibility query; read the inline style directly.
+function isShown(wrapper, selector) {
+  const el = wrapper.find(selector).element;
+  return el.parentElement.style.display !== 'none' && !el.classList.contains('hidden');
+}
+
+describe('WorksheetViewer tab pages', () => {
+  it('shows the worksheet by default and hides both panels', async () => {
     const wrapper = mountViewer();
     await flushPromises();
 
-    const panel = wrapper.find('.leaderboard-panel');
-    expect(panel.classes()).toContain('hidden');
-
-    await wrapper.vm.toggleLeaderboard();
-    await flushPromises();
-
-    expect(panel.classes()).not.toContain('hidden');
-    // test-worksheet has no npointEndpoint, so the panel reports it is unconfigured
-    expect(panel.text()).toContain('A ranglista nincs beállítva');
-
-    await wrapper.vm.toggleLeaderboard();
-
-    expect(panel.classes()).toContain('hidden');
+    expect(wrapper.vm.activeTab).toBe('worksheet');
+    expect(wrapper.find('.nav-tabs .nav-link').classes()).toContain('active');
+    expect(isShown(wrapper, '.task')).toBe(true);
+    expect(isShown(wrapper, '.leaderboard-panel')).toBe(false);
+    expect(isShown(wrapper, '.submissions-panel')).toBe(false);
   });
 
-  it('toggles the submissions panel and loads saved submissions', async () => {
+  it('switches to the leaderboard tab, which loads the panel', async () => {
     const wrapper = mountViewer();
     await flushPromises();
 
-    const panel = wrapper.find('.submissions-panel');
-    expect(panel.classes()).toContain('hidden');
-
-    await wrapper.vm.toggleSubmissions();
+    const tab = wrapper.findAll('.nav-tabs .nav-link').find(b => b.text() === 'Ranglista');
+    await tab.trigger('click');
     await flushPromises();
 
-    expect(panel.classes()).not.toContain('hidden');
-    expect(panel.text()).toContain('Még nem küldtél be válaszokat');
+    expect(wrapper.vm.activeTab).toBe('leaderboard');
+    expect(tab.classes()).toContain('active');
+    expect(isShown(wrapper, '.leaderboard-panel')).toBe(true);
+    // test-worksheet has no npointEndpoint, so the panel reports it is unconfigured
+    expect(wrapper.find('.leaderboard-panel').text()).toContain('A ranglista nincs beállítva');
+    expect(isShown(wrapper, '.task')).toBe(false);
+  });
+
+  it('switches to the submissions tab and back to the worksheet', async () => {
+    const wrapper = mountViewer();
+    await flushPromises();
+
+    const tabs = wrapper.findAll('.nav-tabs .nav-link');
+    await tabs[2].trigger('click');
+    await flushPromises();
+
+    expect(wrapper.vm.activeTab).toBe('submissions');
+    expect(isShown(wrapper, '.submissions-panel')).toBe(true);
+    expect(wrapper.find('.submissions-panel').text()).toContain('Még nem küldtél be válaszokat');
+
+    await tabs[0].trigger('click');
+    await flushPromises();
+
+    expect(wrapper.vm.activeTab).toBe('worksheet');
+    expect(isShown(wrapper, '.task')).toBe(true);
+    expect(isShown(wrapper, '.submissions-panel')).toBe(false);
   });
 });

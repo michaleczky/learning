@@ -26,11 +26,15 @@ export default {
   },
   methods: {
     toggle() {
-      this.visible = !this.visible;
-      if (this.visible) {
-        this.loadLeaderboard();
-        this.$el.scrollIntoView({ block: 'nearest' });
-      }
+      this.visible ? this.hide() : this.show();
+    },
+    hide() {
+      this.visible = false;
+    },
+    show() {
+      this.visible = true;
+      this.loadLeaderboard();
+      this.$el.scrollIntoView({ block: 'nearest' });
     },
     async loadLeaderboard() {
       if (!isNpointConfigured(this.worksheet)) {

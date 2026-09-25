@@ -19,6 +19,7 @@ export default {
           <label for="student-name">Neved a ranglistához:</label>
           <input 
             id="student-name" 
+            class="form-control"
             type="text" 
             v-model="studentName"
             autocomplete="off"
@@ -26,41 +27,57 @@ export default {
           />
         </div>
       </div>
-      
-      <div v-for="(task, ti) in worksheet.tasks" :key="taskKey(task, ti)" class="task">
-        <h2>{{ task.title }}</h2>
-        <p class="instruction" v-html="rich(task.instruction)"></p>
-        <p v-if="task.hint" class="hint" v-html="rich(task.hint)"></p>
-        <ol class="items">
-          <TaskItem 
-            v-for="(item, ii) in task.items" 
-            :key="getItemKey(ti, ii)" 
-            :task="task" 
-            :ti="ti" 
-            :ii="ii" 
-            :answers="answers" 
-            :checked="checked" 
-            :revealed="revealed" 
-            @save="onSaveAnswer"
-          />
-        </ol>
+
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <button type="button" class="nav-link" :class="{ active: activeTab === 'worksheet' }" @click="showTab('worksheet')">Feladatlap</button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="nav-link" :class="{ active: activeTab === 'leaderboard' }" @click="showTab('leaderboard')">Ranglista</button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="nav-link" :class="{ active: activeTab === 'submissions' }" @click="showTab('submissions')">Beküldött feladatok</button>
+        </li>
+      </ul>
+
+      <div v-show="activeTab === 'worksheet'">
+        <div v-for="(task, ti) in worksheet.tasks" :key="taskKey(task, ti)" class="task">
+          <h2>{{ task.title }}</h2>
+          <p class="instruction" v-html="rich(task.instruction)"></p>
+          <p v-if="task.hint" class="hint" v-html="rich(task.hint)"></p>
+          <ol class="items">
+            <TaskItem 
+              v-for="(item, ii) in task.items" 
+              :key="getItemKey(ti, ii)" 
+              :task="task" 
+              :ti="ti" 
+              :ii="ii" 
+              :answers="answers" 
+              :checked="checked" 
+              :revealed="revealed" 
+              @save="onSaveAnswer"
+            />
+          </ol>
+        </div>
       </div>
 
-      <LeaderboardPanel ref="leaderboard" :worksheet="worksheet" />
-      <SubmissionsPanel ref="submissions" :worksheetId="worksheet.id" />
+      <div v-show="activeTab === 'leaderboard'">
+        <LeaderboardPanel ref="leaderboard" :worksheet="worksheet" />
+      </div>
+      <div v-show="activeTab === 'submissions'">
+        <SubmissionsPanel ref="submissions" :worksheetId="worksheet.id" />
+      </div>
 
       <div class="toolbar">
-        <button class="primary" @click="check">Ellenőrzés</button>
-        <button @click="reveal">Megoldások</button>
-        <button @click="toggleLeaderboard">Ranglista</button>
-        <button @click="toggleSubmissions">Beküldött feladatok</button>
-        <button @click="reset">Újrakezdés</button>
+        <button type="button" class="btn btn-primary" @click="check">Ellenőrzés</button>
+        <button type="button" class="btn btn-outline-secondary" @click="reveal">Megoldások</button>
+        <button type="button" class="btn btn-outline-secondary" @click="reset">Újrakezdés</button>
         <span class="score">{{ scoreText }}</span>
       </div>
 
       <div v-if="shareUrl" class="share-url">
         <p>A válaszaid elmentésre kerültek. Ez a linket küld el a tanárdnak:</p>
-        <input type="text" :value="shareUrl" readonly 
+        <input type="text" class="form-control" :value="shareUrl" readonly 
                @click="copyShareUrl" />
       </div>
     </div>
@@ -71,6 +88,7 @@ export default {
       answers: {},
       checked: false,
       revealed: false,
+      activeTab: 'worksheet',
       studentName: getName(),
       shareUrl: null
     };
@@ -163,11 +181,10 @@ export default {
     loadLeaderboard() {
       this.$refs.leaderboard.loadLeaderboard();
     },
-    toggleLeaderboard() {
-      this.$refs.leaderboard.toggle();
-    },
-    toggleSubmissions() {
-      this.$refs.submissions.toggle();
+    showTab(tab) {
+      this.activeTab = tab;
+      if (tab === 'leaderboard') this.$refs.leaderboard.show();
+      else if (tab === 'submissions') this.$refs.submissions.show();
     },
     reveal() {
       this.revealed = true;

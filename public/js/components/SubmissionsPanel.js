@@ -16,7 +16,7 @@ export default {
               <span class="muted"> – {{ sub.name }} – {{ formatDate(sub.date) }}</span>
             </p>
             <div class="url-container">
-              <input type="text" :value="sub.url" readonly 
+              <input type="text" class="form-control" :value="sub.url" readonly 
                      @click="copyUrl($event, sub.url)" />
             </div>
           </div>
@@ -34,11 +34,15 @@ export default {
   },
   methods: {
     toggle() {
-      this.visible = !this.visible;
-      if (this.visible) {
-        this.loadSubmissions();
-        this.$el.scrollIntoView({ block: 'nearest' });
-      }
+      this.visible ? this.hide() : this.show();
+    },
+    hide() {
+      this.visible = false;
+    },
+    show() {
+      this.visible = true;
+      this.loadSubmissions();
+      this.$el.scrollIntoView({ block: 'nearest' });
     },
     loadSubmissions() {
       const allSubmissions = loadSubmissions();
