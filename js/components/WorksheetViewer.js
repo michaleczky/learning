@@ -33,7 +33,7 @@ export default {
         <ol class="items">
           <TaskItem 
             v-for="(item, ii) in task.items" 
-            :key="itemKey(ti, ii)" 
+            :key="getItemKey(ti, ii)" 
             :task="task" 
             :ti="ti" 
             :ii="ii" 
@@ -94,13 +94,15 @@ export default {
     }
   },
   methods: {
-    itemKey,
+    getItemKey(ti, ii) {
+      return itemKey(ti, ii);
+    },
     rich,
     computeScore() {
       let auto = 0, autoOk = 0, open = 0, openOk = 0;
       this.worksheet.tasks.forEach((task, ti) => {
         task.items.forEach((item, ii) => {
-          const key = itemKey(ti, ii);
+          const key = this.getItemKey(ti, ii);
           if (task.type === 'open') {
             open++;
             if (this.answers[`${key}:ok`]) openOk++;
