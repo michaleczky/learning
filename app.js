@@ -233,12 +233,13 @@ function check() {
   updateScore();
   
   // Save answers to a separate npoint.io document and show URL to student
-  const studentName = getName().trim();
-  if (studentName) {
-    saveAnswersToNpoint(state.current, state.answers, studentName).then(url => {
-      if (url) {
-        // Save URL to localStorage for resending later
-        saveSubmission(state.current.id, url, studentName);
+  const studentName = getName().trim() || 'Anonymous';
+  saveAnswersToNpoint(state.current, state.answers, studentName).then(url => {
+    if (url) {
+      // Always save URL to localStorage for resending later
+      saveSubmission(state.current.id, url, studentName);
+      
+      if (studentName !== 'Anonymous') {
         
         const shareMsg = h('div', { class: 'share-url', id: 'share-url' },
           h('p', {}, 'A válaszaid elmentésre kerültek. Ez a linket küld el a tanárodnak:'),
@@ -256,7 +257,6 @@ function check() {
         }
       }
     });
-  }
   
   if (isNpointConfigured(state.current) && studentName && confirm('Az eredményed a ranglistára kerül. Folytatod?')) {
     submitScore();
