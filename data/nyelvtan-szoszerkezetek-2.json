@@ -4,6 +4,7 @@
   "subject": "Magyar nyelvtan",
   "grade": 8,
   "description": "Alaptag és bővítmény, mellérendelő viszonyok, önálló szerkezetalkotás.",
+  "npointEndpoint": "https://api.npoint.io/",
   "tasks": [
     {
       "title": "1. feladat – Válogatás",
