@@ -295,8 +295,7 @@ function submitScore() {
     name: name.slice(0, 60),
     score: autoOk,
     max: auto
-  }, state.current)
-  }).then(() => loadLeaderboard()).catch(err => console.error('Ranglista mentése sikertelen:', err));
+  }, state.current).then(() => loadLeaderboard()).catch(err => console.error('Ranglista mentése sikertelen:', err));
 }
 
 function renderLeaderboardPanel() {
