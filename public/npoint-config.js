@@ -4,8 +4,8 @@
 // as `npointEndpoint`. Alternatively, set a default central endpoint below.
 //
 // To create an endpoint for a worksheet:
-//   POST to https://api.npoint.io/ with body: []
-//   Copy the returned URL (e.g., https://api.npoint.io/xxxx-xxxx)
+//   Visit https://www.npoint.io and create a new document in the editor
+//   Copy its API URL (e.g., https://api.npoint.io/xxxx-xxxx)
 //   Add it to your worksheet JSON: "npointEndpoint": "https://api.npoint.io/xxxx-xxxx"
 
 // Default endpoint (used if worksheet doesn't have its own)
@@ -69,6 +69,49 @@ export async function submitToNpoint(submission, worksheet) {
   }
 }
 
+// Fetch the CSRF token npoint.io requires for document creation.
+// The token lives in a meta tag on the homepage; the API allows cross-origin
+// reads (Access-Control-Allow-Origin: *), so this works from the browser.
+async function fetchNpointCsrfToken() {
+  const response = await fetch('https://www.npoint.io/');
+  if (!response.ok) {
+    throw new Error(`Failed to load npoint.io: ${response.status}`);
+  }
+  const html = await response.text();
+  const match = html.match(/name="csrf-token" content="([^"]+)"/);
+  if (!match) {
+    throw new Error('CSRF token not found on npoint.io homepage');
+  }
+  return match[1];
+}
+
+// Create a new empty npoint.io document and return its API URL.
+// Note: POSTing to https://api.npoint.io/ does NOT create documents (it
+// returns 500). Documents are created via the website's own route.
+async function createNpointDocument() {
+  const csrfToken = await fetchNpointCsrfToken();
+
+  const response = await fetch('https://www.npoint.io/documents', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': csrfToken,
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify({})
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create document: ${response.status}`);
+  }
+
+  const doc = await response.json();
+  if (!doc.api_url) {
+    throw new Error('npoint.io did not return a document URL');
+  }
+  return doc.api_url;
+}
+
 // Save student answers to a new npoint.io document and return the URL
 // Returns the URL where the answers are stored, or null on error
 export async function saveAnswersToNpoint(worksheet, answers, studentName) {
@@ -81,8 +124,10 @@ export async function saveAnswersToNpoint(worksheet, answers, studentName) {
       savedAt: new Date().toISOString()
     };
 
-    // POST to npoint.io API to create a new document
-    const response = await fetch('https://api.npoint.io/', {
+    // Create a new document, then fill it with the answers
+    const apiUrl = await createNpointDocument();
+
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -94,9 +139,7 @@ export async function saveAnswersToNpoint(worksheet, answers, studentName) {
       throw new Error(`Failed to save: ${response.status}`);
     }
 
-    // The response contains the URL where the data is stored
-    const result = await response.json();
-    return result.url || response.url;
+    return apiUrl;
   } catch (err) {
     console.error('Error saving answers to npoint.io:', err);
     return null;
