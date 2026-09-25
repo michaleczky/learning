@@ -56,6 +56,20 @@ function setName(value) {
   try { localStorage.setItem(NAME_KEY, value); } catch { /* storage unavailable */ }
 }
 
+// Store submission URLs per worksheet for resending
+const SUBMISSIONS_KEY = 'learning:submissions';
+function loadSubmissions() {
+  try { return JSON.parse(localStorage.getItem(SUBMISSIONS_KEY)) || {}; } catch { return {}; }
+}
+function saveSubmission(worksheetId, url, name) {
+  try {
+    const submissions = loadSubmissions();
+    if (!submissions[worksheetId]) submissions[worksheetId] = [];
+    submissions[worksheetId].push({ url, name, date: new Date().toISOString() });
+    localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(submissions));
+  } catch { /* storage unavailable */ }
+}
+
 async function loadWorksheets() {
   const index = await fetch('data/index.json').then(r => r.json());
   // Handle both array format and taxonomy (object) format
@@ -167,10 +181,12 @@ function renderWorksheet(ws) {
       )
     ),
     renderLeaderboardPanel(),
+    renderSubmissionsPanel(),
     h('div', { class: 'toolbar' },
       h('button', { class: 'primary', onclick: check }, 'Ellenőrzés'),
       h('button', { onclick: reveal }, 'Megoldások'),
       h('button', { onclick: toggleLeaderboard }, 'Ranglista'),
+      h('button', { onclick: toggleSubmissions }, 'Beküldött feladatok'),
       h('button', { onclick: reset }, 'Újrakezdés'),
       h('span', { class: 'score', id: 'score' })
     )
@@ -221,6 +237,9 @@ function check() {
   if (studentName) {
     saveAnswersToNpoint(state.current, state.answers, studentName).then(url => {
       if (url) {
+        // Save URL to localStorage for resending later
+        saveSubmission(state.current.id, url, studentName);
+        
         const shareMsg = h('div', { class: 'share-url', id: 'share-url' },
           h('p', {}, 'A válaszaid elmentésre kerültek. Ez a linket küld el a tanárodnak:'),
           h('input', { 
@@ -332,6 +351,65 @@ async function loadLeaderboard() {
   } catch (err) {
     status.textContent = 'Nem sikerült betölteni a ranglistát (lásd konzol).';
     console.error(err);
+  }
+}
+
+// Render submissions panel
+function renderSubmissionsPanel() {
+  return h('section', { class: 'submissions-panel hidden', id: 'submissions-panel' },
+    h('h2', {}, 'Beküldött feladataim'),
+    h('p', { class: 'muted', id: 'submissions-status' }, 'Kattints a Beküldött feladatok gombra a megtekintéshez.'),
+    h('div', { class: 'submissions-list', id: 'submissions-list' })
+  );
+}
+
+// Load and display saved submissions from localStorage
+function loadAndDisplaySubmissions() {
+  const listEl = document.getElementById('submissions-list');
+  const statusEl = document.getElementById('submissions-status');
+  if (!listEl || !statusEl) return;
+
+  const allSubmissions = loadSubmissions();
+  const currentId = state.current?.id;
+  
+  // Get submissions for current worksheet
+  const submissions = currentId ? allSubmissions[currentId] || [] : [];
+  
+  if (!submissions || submissions.length === 0) {
+    statusEl.textContent = currentId ? 'Még nem küldtél be válaszokat ehez a feladatlaphoz.' : 'Nincs beküldött feladat.';
+    listEl.replaceChildren();
+    return;
+  }
+
+  statusEl.textContent = '';
+  listEl.replaceChildren(
+    ...submissions.map((sub, i) => {
+      const date = sub.date ? new Date(sub.date).toLocaleString('hu-HU') : '';
+      return h('div', { class: 'submission-item' },
+        h('p', {},
+          h('strong', {}, `${i + 1}. beküldés`),
+          h('span', { class: 'muted' }, ` – ${sub.name} – ${date}`)
+        ),
+        h('div', { class: 'url-container' },
+          h('input', {
+            type: 'text',
+            value: sub.url,
+            readonly: true,
+            onclick: e => { e.target.select(); navigator.clipboard.writeText(sub.url); }
+          })
+        )
+      );
+    })
+  );
+}
+
+function toggleSubmissions() {
+  const panel = document.getElementById('submissions-panel');
+  const opening = panel.classList.contains('hidden');
+  panel.classList.toggle('hidden');
+  if (opening) {
+    loadAndDisplaySubmissions();
+    panel.scrollIntoView({ block: 'nearest' });
   }
 }
 
