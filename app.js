@@ -238,18 +238,17 @@ function updateScore() {
 }
 
 function submitScore() {
-  if (!db) return;
+  if (!isNpointConfigured()) return;
   const name = getName().trim();
   if (!name) return;
   const { auto, autoOk } = computeScore();
   if (auto === 0) return;
-  db.collection('submissions').add({
+  submitToNpoint({
     worksheetId: state.current.id,
     name: name.slice(0, 60),
     score: autoOk,
-    max: auto,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(loadLeaderboard).catch(err => console.error('Ranglista mentése sikertelen:', err));
+    max: auto
+  }).then(() => loadLeaderboard()).catch(err => console.error('Ranglista mentése sikertelen:', err));
 }
 
 function renderLeaderboardPanel() {
@@ -270,46 +269,42 @@ function toggleLeaderboard() {
   }
 }
 
-function loadLeaderboard() {
+async function loadLeaderboard() {
   const status = document.getElementById('leaderboard-status');
   const list = document.getElementById('leaderboard-list');
   if (!status || !list) return;
-  if (!db) {
-    status.textContent = 'A ranglista nincs beállítva (töltsd ki a firebase-config.js fájlt).';
+  if (!isNpointConfigured()) {
+    status.textContent = 'A ranglista nincs beállítva (töltsd ki a npoint-config.js fájlt).';
     list.replaceChildren();
     return;
   }
   status.textContent = 'Betöltés…';
   list.replaceChildren();
-  db.collection('submissions')
-    .where('worksheetId', '==', state.current.id)
-    .orderBy('score', 'desc')
-    .orderBy('createdAt', 'asc')
-    .limit(20)
-    .get()
-    .then(snap => {
-      if (snap.empty) {
-        status.textContent = 'Még senki nem töltötte ki ezt a feladatlapot.';
-        return;
-      }
-      status.textContent = '';
-      list.replaceChildren(
-        ...snap.docs.map((doc, i) => {
-          const d = doc.data();
-          const when = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString('hu-HU') : '';
-          return h('li', {},
-            h('span', { class: 'rank' }, `${i + 1}.`),
-            h('span', { class: 'lb-name' }, d.name),
-            h('span', { class: 'lb-score' }, `${d.score} / ${d.max}`),
-            h('span', { class: 'lb-when muted' }, when)
-          );
-        })
-      );
-    })
-    .catch(err => {
-      status.textContent = 'Nem sikerült betölteni a ranglistát (lásd konzol).';
-      console.error(err);
-    });
+  
+  try {
+    const submissions = await loadSubmissionsFromNpoint(state.current.id);
+    
+    if (!submissions || submissions.length === 0) {
+      status.textContent = 'Még senki nem töltötte ki ezt a feladatlapot.';
+      return;
+    }
+    
+    status.textContent = '';
+    list.replaceChildren(
+      ...submissions.map((d, i) => {
+        const when = d.createdAt ? new Date(d.createdAt).toLocaleString('hu-HU') : '';
+        return h('li', {},
+          h('span', { class: 'rank' }, `${i + 1}.`),
+          h('span', { class: 'lb-name' }, d.name),
+          h('span', { class: 'lb-score' }, `${d.score} / ${d.max}`),
+          h('span', { class: 'lb-when muted' }, when)
+        );
+      })
+    );
+  } catch (err) {
+    status.textContent = 'Nem sikerült betölteni a ranglistát (lásd konzol).';
+    console.error(err);
+  }
 }
 
 function showSolution(li, text, label) {

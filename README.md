@@ -1,104 +1,103 @@
-# Gyakorló feladatlapok
+# Practice Worksheets
 
-Statikus HTML + JS oldal iskolai gyakorló feladatlapokhoz. A feladatlapok JSON fájlok a `data/` mappában, az oldal ezeket tölti be és teszi kitölthetővé. Nincs build lépés, nincs függőség.
+A static HTML + JS website for school practice worksheets. Worksheets are JSON files in the `data/` directory, which the page loads and makes fillable. No build step required, no dependencies.
 
-## Futtatás helyben
+## Running Locally
 
-A böngésző `file://` alól nem engedi a JSON-ok betöltését, ezért kell egy helyi szerver:
+The browser doesn't allow loading JSON files from `file://` protocol, so you need a local server:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Utána nyisd meg: http://localhost:8000
+Then open: http://localhost:8000
 
-## Közzététel GitHub Pages-en
+## Publishing on GitHub Pages
 
-1. Töltsd fel a repót GitHubra.
-2. A repó beállításaiban (Settings → Pages) válaszd a `main` ágat és a `/ (root)` mappát.
-3. Az oldal a `https://<felhasználó>.github.io/<repó>/` címen lesz elérhető.
+1. Push the repository to GitHub.
+2. In the repository settings (Settings → Pages), select the `main` branch and the `/ (root)` folder.
+3. The site will be available at `https://<username>.github.io/<repo>/`.
 
-A `.nojekyll` fájl azért van, hogy GitHub Pages ne futtassa a Jekyll feldolgozót.
+The `.nojekyll` file prevents GitHub Pages from running the Jekyll processor.
 
-## Ranglista (Firebase Firestore)
+## Leaderboard (npoint.io)
 
-A javítás teljes egészében a böngészőben történik (a `data/*.json` fájlok tartalmazzák a helyes válaszokat is), nincs saját szerver vagy backend kód. A kitöltők nevét, a dátumot és a pontszámot egy Firestore adatbázis tárolja, amit a kliens közvetlenül ír/olvas; a védelmet a `firestore.rules` biztonsági szabályok adják, amiket Google szerverei kényszerítenek ki – nincs mit üzemeltetni.
+All grading happens entirely in the browser (the `data/*.json` files also contain the correct answers). There is no custom server or backend code. The names, dates, and scores of participants are stored using the free JSON storage service [npoint.io](https://npoint.io), which the client reads and writes directly.
 
-### Első beállítás
+### Initial Setup
 
-1. Hozz létre egy ingyenes Firebase-fiókot és projektet a [console.firebase.google.com](https://console.firebase.google.com) oldalon.
-2. A projektben kapcsold be a **Firestore Database**-t (Build → Firestore Database → Create database), natív módban, bármelyik régióban.
-3. Adj hozzá egy webalkalmazást a projekthez (Project settings → General → Your apps → Add app → Web), és másold ki a kapott `firebaseConfig` objektumot.
-4. Illeszd be az értékeket a `firebase-config.js` fájlba (ezek nem titkos kulcsok, nyugodtan commitolhatók – lásd a fájl tetején lévő megjegyzést).
-5. Töltsd fel a biztonsági szabályokat és az indexet:
-   - Vagy a Firebase CLI-vel: `firebase login`, majd `firebase use --add` (válaszd ki a projektet), majd `firebase deploy --only firestore`.
-   - Vagy kézzel a console-on: Firestore Database → Rules fülre másold be a `firestore.rules` tartalmát; az indexet (`firestore.indexes.json`) pedig az első lekérdezéskor a konzol hibaüzenetében kapott linkre kattintva hozhatod létre.
-6. Helyi teszteléshez indíts szervert (lásd fent), tölts ki egy feladatlapot, és ellenőrizd, hogy a Ranglista gomb működik-e.
+1. Visit the [npoint.io API](https://api.npoint.io/) page, or send a POST request:
+   ```bash
+   curl -X POST https://api.npoint.io/ -H "Content-Type: application/json" -d '[]'
+   ```
+   The response will contain a unique URL (e.g., `https://api.npoint.io/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`).
+2. Copy the received URL as the value of the `NPPOINT_ENDPOINT` variable in the `npoint-config.js` file.
+3. For local testing, start a server (see above), fill out a worksheet, and verify that the Leaderboard button works.
 
-### Hogyan működik
+### How It Works
 
-- A feladatlap tetején lévő névmezőbe beírt nevet a böngésző megjegyzi (`localStorage`), és minden **Ellenőrzés** után elküldi a Firestore-nak az automatikusan javítható feladatok pontszámát (a nyitott, önértékelt feladatok nem számítanak bele).
-- A **Ranglista** gomb az adott feladatlaphoz tartozó legjobb 20 beküldést mutatja, pontszám szerint csökkenő sorrendben.
-- Ha a `firebase-config.js` nincs kitöltve, a feladatlapok kitöltése és javítása ugyanúgy működik, csak a ranglista jelzi, hogy nincs beállítva.
-- A `firestore.rules` csak a várt alakú, ésszerű értékű beküldéseket engedi be, és tiltja a módosítást/törlést; nem akadályozza meg, hogy valaki más nevében küldjön be pontszámot – ez egy osztálytermi gyakorlófelülethez elegendő védelem, de nem helyettesíti a bejelentkezést.
+- The name entered in the name field at the top of the worksheet is saved by the browser (`localStorage`), and after every **Check** operation, the scores for automatically gradable tasks are sent to npoint.io (open, self-assessed tasks are not included).
+- The **Leaderboard** button shows the top 20 submissions for the current worksheet, sorted by score in descending order.
+- If `npoint-config.js` is not filled in, filling out and grading worksheets works the same way, but the leaderboard will indicate that it is not configured.
+- npoint.io is a free service, but you need to share the URL with others if you want to use the leaderboard collaboratively.
 
-## Új feladatlap hozzáadása
+## Adding a New Worksheet
 
-1. Hozz létre egy új JSON fájlt a `data/` mappában (lásd a formátumot lent).
-2. Vedd fel a fájlnevet a `data/index.json` listájába.
+1. Create a new JSON file in the `data/` directory (see the format below).
+2. Add the filename to the list in `data/index.json`.
 
-## Feladatlap formátum
+## Worksheet Format
 
 ```json
 {
-  "id": "egyedi-azonosito",
-  "title": "Feladatlap címe",
-  "subject": "Tantárgy",
+  "id": "unique-identifier",
+  "title": "Worksheet Title",
+  "subject": "Subject",
   "grade": 8,
-  "description": "Rövid leírás (opcionális).",
+  "description": "Brief description (optional).",
   "tasks": [ ... ]
 }
 ```
 
-Az `id` az URL-ben is megjelenik (`#/egyedi-azonosito`), és a mentett válaszok kulcsa is, ezért legyen egyedi és ne változzon.
+The `id` also appears in the URL (`#/unique-identifier`) and is the key for saved answers, so it should be unique and not change.
 
-### Feladattípusok
+### Task Types
 
-Minden feladatnak van `title`, `instruction`, opcionális `hint`, `type` és `items` mezője. A `text`, `instruction`, `hint` és `solution` mezőkben a `*csillagok közé*` tett szöveg dőlt lesz.
+Every task has `title`, `instruction`, optional `hint`, `type`, and `items` fields. In the `text`, `instruction`, `hint`, and `solution` fields, text wrapped in `*asterisks*` will be rendered in italics.
 
-**`choice`** – néhány lehetőség közül egyet kell választani (rádiógombok).
+**`choice`** – select one option from a few choices (radio buttons).
 
 ```json
 {
   "type": "choice",
-  "options": ["alárendelő", "mellérendelő"],
-  "items": [{ "text": "piros alma", "answer": "alárendelő" }]
+  "options": ["option1", "option2"],
+  "items": [{ "text": "question text", "answer": "option1" }]
 }
 ```
 
-**`select`** – ugyanaz, mint a `choice`, de lenyíló listával. Sok lehetőség esetén ez a kényelmesebb.
+**`select`** – same as `choice`, but uses a dropdown list. More convenient when there are many options.
 
-**`text`** – szabad szöveges válasz, amit az oldal automatikusan ellenőriz. Az `answer` lehet egy szöveg vagy több elfogadható válasz listája. Az összehasonlítás nem érzékeny a kis- és nagybetűre, a szélső szóközökre és a záró írásjelekre.
+**`text`** – free text response that the page automatically checks. The `answer` can be a single string or a list of acceptable answers. Comparison is case-insensitive, ignores leading/trailing spaces, and punctuation at the end.
 
 ```json
 {
   "type": "text",
-  "items": [{ "text": "kapcsolatos: kenyeret ___ vajat", "answer": ["és", "meg", "s"] }]
+  "items": [{ "text": "question: bread ___ butter", "answer": ["and", "or", "with"] }]
 }
 ```
 
-**`open`** – nyitott feladat, amit az oldal nem tud automatikusan javítani. Ellenőrzéskor megjelenik a `solution` mintamegoldás, és a tanuló maga jelöli be, hogy sikerült-e.
+**`open`** – open-ended task that the page cannot automatically grade. When checking, the `solution` sample solution is displayed, and the student marks whether they succeeded.
 
 ```json
 {
   "type": "open",
-  "items": [{ "text": "Alkoss minőségjelzős szószerkezetet!", "solution": "Például: *régi ház*." }]
+  "items": [{ "text": "Create an adjective phrase!", "solution": "For example: *old house*." }]
 }
 ```
 
-## Működés
+## Features
 
-- **Ellenőrzés**: kijavítja az automatikusan javítható feladatokat, a nyitottaknál mutatja a mintamegoldást.
-- **Megoldások**: minden megoldást megmutat.
-- **Újrakezdés**: törli az adott feladatlap válaszait.
-- A válaszok a böngésző `localStorage`-ában maradnak meg, feladatlaponként.
+- **Check**: grades automatically gradable tasks, shows sample solutions for open-ended ones.
+- **Solutions**: shows all solutions.
+- **Start Over**: clears answers for the current worksheet.
+- Answers are saved in the browser's `localStorage`, per worksheet.
