@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /submissions/{submissionId} {
+      // Bárki olvashatja a ranglistát.
+      allow read: if true;
+
+      // Beküldés csak a várt alakban engedélyezett, és nincs mód
+      // módosításra vagy törlésre utólag.
+      allow create: if request.resource.data.keys().hasOnly(['worksheetId', 'name', 'score', 'max', 'createdAt'])
+        && request.resource.data.worksheetId is string
+        && request.resource.data.worksheetId.size() > 0
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.score is int
+        && request.resource.data.max is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= request.resource.data.max
+        && request.resource.data.createdAt == request.time;
+
+      allow update, delete: if false;
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "id": "nyelvtan-szoszerkezetek-1",
+  "title": "Alárendelő és mellérendelő szószerkezetek – 1.",
+  "subject": "Magyar nyelvtan",
+  "grade": 8,
+  "description": "Szószerkezetek felismerése és fajtáik meghatározása.",
+  "tasks": [
+    {
+      "title": "1. feladat – Alárendelő vagy mellérendelő?",
+      "instruction": "Döntsd el az alábbi szószerkezetekről, hogy alárendelő vagy mellérendelő típusúak!",
+      "type": "choice",
+      "options": ["alárendelő", "mellérendelő"],
+      "items": [
+        { "text": "piros alma", "answer": "alárendelő" },
+        { "text": "fiúk és lányok", "answer": "mellérendelő" },
+        { "text": "könyvet olvas", "answer": "alárendelő" },
+        { "text": "sem esik, sem fúj", "answer": "mellérendelő" },
+        { "text": "erdőben sétál", "answer": "alárendelő" },
+        { "text": "gyors, de biztos", "answer": "mellérendelő" },
+        { "text": "anya kalapja", "answer": "alárendelő" },
+        { "text": "két alma", "answer": "alárendelő" },
+        { "text": "vagy eljössz, vagy itthon maradsz", "answer": "mellérendelő" },
+        { "text": "iskolába megy", "answer": "alárendelő" }
+      ]
+    },
+    {
+      "title": "2. feladat – Alárendelő szószerkezetek fajtái",
+      "instruction": "Határozd meg, milyen fajta alárendelő szószerkezet az alábbi!",
+      "type": "select",
+      "options": [
+        "minőségjelzős",
+        "mennyiségjelzős",
+        "birtokos jelzős",
+        "tárgyas",
+        "helyhatározós",
+        "időhatározós",
+        "módhatározós",
+        "részeshatározós"
+      ],
+      "items": [
+        { "text": "kék ég", "answer": "minőségjelzős" },
+        { "text": "három könyv", "answer": "mennyiségjelzős" },
+        { "text": "apám autója", "answer": "birtokos jelzős" },
+        { "text": "levelet ír", "answer": "tárgyas" },
+        { "text": "gyorsan fut", "answer": "módhatározós" },
+        { "text": "kertben játszik", "answer": "helyhatározós" },
+        { "text": "reggel óta vár", "answer": "időhatározós" },
+        { "text": "barátjának segít", "answer": "részeshatározós" },
+        { "text": "örömmel fogad", "answer": "módhatározós" },
+        { "text": "iskola felé tart", "answer": "helyhatározós" }
+      ]
+    },
+    {
+      "title": "3. feladat – Mellérendelő szószerkezetek fajtái",
+      "instruction": "Határozd meg, milyen fajta mellérendelő viszony van a tagok között!",
+      "type": "select",
+      "options": ["kapcsolatos", "ellentétes", "választó", "következtető", "magyarázó"],
+      "items": [
+        { "text": "tanul és dolgozik", "answer": "kapcsolatos" },
+        { "text": "kicsi, de erős", "answer": "ellentétes" },
+        { "text": "vagy tévét nézünk, vagy olvasunk", "answer": "választó" },
+        { "text": "fáradt volt, tehát lefeküdt", "answer": "következtető" },
+        { "text": "nem ő hibázott, hanem én", "answer": "ellentétes" },
+        { "text": "eső esett, ezért elmaradt a meccs", "answer": "következtető" },
+        { "text": "piros és fehér zászló", "answer": "kapcsolatos" },
+        { "text": "sem enni, sem inni nem akart", "answer": "kapcsolatos" }
+      ]
+    },
+    {
+      "title": "4. feladat – Szerkezeti elemzés",
+      "instruction": "Emelj ki a mondatból egy alárendelő és egy mellérendelő szószerkezetet, majd nevezd meg a fajtájukat!",
+      "type": "open",
+      "items": [
+        {
+          "text": "*A kertben virágzó rózsák és tulipánok gyönyörű illatot árasztottak.*",
+          "solution": "Alárendelő: *kertben virágzó* (helyhatározós), *gyönyörű illatot* (minőségjelzős), *illatot árasztottak* (tárgyas). Mellérendelő: *rózsák és tulipánok* (kapcsolatos)."
+        },
+        {
+          "text": "*A fáradt, de boldog gyerekek hazafelé indultak az iskolából.*",
+          "solution": "Alárendelő: *hazafelé indultak* (helyhatározós), *iskolából indultak* (helyhatározós), *boldog gyerekek* (minőségjelzős). Mellérendelő: *fáradt, de boldog* (ellentétes)."
+        },
+        {
+          "text": "*Anyám finom levest főzött, ezért mindenki jóízűen evett.*",
+          "solution": "Alárendelő: *finom levest* (minőségjelzős), *levest főzött* (tárgyas), *jóízűen evett* (módhatározós). Mellérendelő szószerkezet a tagmondatokon belül nincs; a két tagmondat között következtető viszony van (*ezért*)."
+        }
+      ]
+    }
+  ]
+}

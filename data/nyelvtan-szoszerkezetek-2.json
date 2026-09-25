@@ -1,0 +1,114 @@
+{
+  "id": "nyelvtan-szoszerkezetek-2",
+  "title": "Alárendelő és mellérendelő szószerkezetek – 2.",
+  "subject": "Magyar nyelvtan",
+  "grade": 8,
+  "description": "Alaptag és bővítmény, mellérendelő viszonyok, önálló szerkezetalkotás.",
+  "tasks": [
+    {
+      "title": "1. feladat – Válogatás",
+      "instruction": "Csoportosítsd a szószerkezeteket: alárendelő vagy mellérendelő!",
+      "type": "choice",
+      "options": ["alárendelő", "mellérendelő"],
+      "items": [
+        { "text": "hangosan nevet", "answer": "alárendelő" },
+        { "text": "kenyér és tej", "answer": "mellérendelő" },
+        { "text": "a szomszéd kutyája", "answer": "alárendelő" },
+        { "text": "lassan, de biztosan", "answer": "mellérendelő" },
+        { "text": "hidat épít", "answer": "alárendelő" },
+        { "text": "sem meleg, sem hideg", "answer": "mellérendelő" },
+        { "text": "öt tanuló", "answer": "alárendelő" },
+        { "text": "holnap érkezik", "answer": "alárendelő" },
+        { "text": "vagy busszal, vagy vonattal", "answer": "mellérendelő" },
+        { "text": "fényes csillag", "answer": "alárendelő" }
+      ]
+    },
+    {
+      "title": "2. feladat – Milyen bővítmény?",
+      "instruction": "Nevezd meg, milyen bővítmény kapcsolódik az alaptaghoz!",
+      "hint": "Először keresd meg az alaptagot (amire rá lehet kérdezni a bővítménnyel), aztán tedd fel a kérdést: milyen? hány? kié? mit? hol? mikor? hogyan? kinek?",
+      "type": "select",
+      "options": [
+        "minőségjelző",
+        "mennyiségjelző",
+        "birtokos jelző",
+        "tárgy",
+        "helyhatározó",
+        "időhatározó",
+        "módhatározó",
+        "részeshatározó"
+      ],
+      "items": [
+        { "text": "nagymama kertje", "answer": "birtokos jelző" },
+        { "text": "ajtót nyit", "answer": "tárgy" },
+        { "text": "száz forint", "answer": "mennyiségjelző" },
+        { "text": "Pécsre utazik", "answer": "helyhatározó" },
+        { "text": "este indul", "answer": "időhatározó" },
+        { "text": "hidegen fogad", "answer": "módhatározó" },
+        { "text": "tanárának köszön", "answer": "részeshatározó" },
+        { "text": "zöld szemű", "answer": "minőségjelző" }
+      ]
+    },
+    {
+      "title": "3. feladat – Melyik mellérendelő fajta?",
+      "instruction": "Írd a szószerkezet mellé a viszony fajtáját!",
+      "type": "select",
+      "options": ["kapcsolatos", "ellentétes", "választó", "következtető", "magyarázó"],
+      "items": [
+        { "text": "alma vagy körte", "answer": "választó" },
+        { "text": "okos, mégis szerény", "answer": "ellentétes" },
+        { "text": "beteg volt, ezért otthon maradt", "answer": "következtető" },
+        { "text": "elaludt, azaz elkésett", "answer": "magyarázó" },
+        { "text": "dolgozik és tanul", "answer": "kapcsolatos" },
+        { "text": "nem kávét, hanem teát", "answer": "ellentétes" },
+        { "text": "hol nevet, hol sír", "answer": "választó" },
+        { "text": "jól felelt, ugyanis sokat készült", "answer": "magyarázó" }
+      ]
+    },
+    {
+      "title": "4. feladat – Írj kötőszót!",
+      "instruction": "Írd be a hiányzó kötőszót úgy, hogy a megadott fajtájú mellérendelő szerkezet jöjjön létre!",
+      "type": "text",
+      "items": [
+        { "text": "kapcsolatos: kenyeret ___ vajat", "answer": ["és", "meg", "s"] },
+        { "text": "ellentétes: szép, ___ drága", "answer": ["de", "azonban", "viszont", "mégis", "ám"] },
+        { "text": "választó: sétálunk ___ biciklizünk", "answer": ["vagy", "avagy"] },
+        { "text": "következtető: esik, ___ otthon maradunk", "answer": ["ezért", "tehát", "így", "hát"] },
+        { "text": "magyarázó: nem jött el, ___ beteg volt", "answer": ["ugyanis", "hiszen", "tudniillik", "mert"] }
+      ]
+    },
+    {
+      "title": "5. feladat – Alkoss szószerkezetet!",
+      "instruction": "Alkoss egy-egy szószerkezetet a megadott fajtából!",
+      "type": "open",
+      "items": [
+        { "text": "minőségjelzős", "solution": "Például: *régi ház*, *kedves tanár*." },
+        { "text": "mennyiségjelzős", "solution": "Például: *sok gyerek*, *három alma*." },
+        { "text": "birtokos jelzős", "solution": "Például: *a város főtere*, *Anna füzete*." },
+        { "text": "tárgyas", "solution": "Például: *dalt énekel*, *levelet kap*." },
+        { "text": "helyhatározós", "solution": "Például: *parkban fut*, *asztalra tesz*." },
+        { "text": "időhatározós", "solution": "Például: *délben ebédel*, *tavaly költözött*." },
+        { "text": "módhatározós", "solution": "Például: *ügyesen rajzol*, *halkan beszél*." }
+      ]
+    },
+    {
+      "title": "6. feladat – Elemzés mondatból",
+      "instruction": "Keress a mondatban egy alárendelő és egy mellérendelő szószerkezetet, és nevezd meg a fajtájukat!",
+      "type": "open",
+      "items": [
+        {
+          "text": "*A két legjobb barátom kirándulni vagy strandolni szeretne a hétvégén.*",
+          "solution": "Alárendelő: *két barátom* (mennyiségjelzős), *legjobb barátom* (minőségjelzős), *hétvégén szeretne* (időhatározós). Mellérendelő: *kirándulni vagy strandolni* (választó)."
+        },
+        {
+          "text": "*Fáradtan, de elégedetten értek haza a hosszú túráról.*",
+          "solution": "Alárendelő: *haza értek* (helyhatározós), *túráról értek* (helyhatározós), *hosszú túráról* (minőségjelzős). Mellérendelő: *fáradtan, de elégedetten* (ellentétes)."
+        },
+        {
+          "text": "*A tanár érdekes és tanulságos történeteket mesélt az órán.*",
+          "solution": "Alárendelő: *történeteket mesélt* (tárgyas), *órán mesélt* (helyhatározós), *érdekes történeteket* (minőségjelzős). Mellérendelő: *érdekes és tanulságos* (kapcsolatos)."
+        }
+      ]
+    }
+  ]
+}
