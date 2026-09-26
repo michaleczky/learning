@@ -1,4 +1,5 @@
-import { loadSubmissions, submissionLink } from '../utils.js';
+import { submissionLink } from '../utils.js';
+import { loadSubmissions } from '../storage.js';
 
 export default {
   template: `

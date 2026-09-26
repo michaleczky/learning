@@ -1,7 +1,8 @@
 import TaskItem from './TaskItem.js';
 import LeaderboardPanel from './LeaderboardPanel.js';
 import SubmissionsPanel from './SubmissionsPanel.js';
-import { loadAnswers, saveAnswers, getName, setName, loadSubmissions, saveSubmission, submissionLink, rich, isCorrect, answerText, itemKey } from '../utils.js';
+import { submissionLink, rich, isCorrect, answerText, itemKey } from '../utils.js';
+import { loadAnswers, saveAnswers, getName, setName, loadSubmissions, saveSubmission } from '../storage.js';
 import { saveAnswersToNpoint, submitToNpoint, isNpointConfigured } from '../../npoint-config.js';
 
 export default {

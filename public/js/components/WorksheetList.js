@@ -1,5 +1,3 @@
-import { getName, setName } from '../utils.js';
-
 export default {
   template: `
     <div>

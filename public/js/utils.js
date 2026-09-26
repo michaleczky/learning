@@ -1,4 +1,5 @@
-// Utility functions for Practice Worksheets
+// Utility functions for Practice Worksheets: rich-text formatting, answer
+// grading, and share links. Persistence lives in storage.js.
 
 // HTML escaping and formatting
 function escapeHtml(s) {
@@ -23,44 +24,6 @@ export function isCorrect(given, answer) {
 
 export function answerText(answer) {
   return Array.isArray(answer) ? answer.join(' / ') : answer;
-}
-
-// Storage helpers
-const ANSWERS_PREFIX = 'learning:';
-const NAME_KEY = 'learning:name';
-const SUBMISSIONS_KEY = 'learning:submissions';
-
-export function getAnswersKey(id) {
-  return `${ANSWERS_PREFIX}${id}`;
-}
-
-export function loadAnswers(id) {
-  try { return JSON.parse(localStorage.getItem(getAnswersKey(id))) || {}; } catch { return {}; }
-}
-
-export function saveAnswers(id, answers) {
-  try { localStorage.setItem(getAnswersKey(id), JSON.stringify(answers)); } catch { /* storage unavailable */ }
-}
-
-export function getName() {
-  try { return localStorage.getItem(NAME_KEY) || ''; } catch { return ''; }
-}
-
-export function setName(value) {
-  try { localStorage.setItem(NAME_KEY, value); } catch { /* storage unavailable */ }
-}
-
-export function loadSubmissions() {
-  try { return JSON.parse(localStorage.getItem(SUBMISSIONS_KEY)) || {}; } catch { return {}; }
-}
-
-export function saveSubmission(worksheetId, url, name) {
-  try {
-    const submissions = loadSubmissions();
-    if (!submissions[worksheetId]) submissions[worksheetId] = [];
-    submissions[worksheetId].push({ url, name, date: new Date().toISOString() });
-    localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(submissions));
-  } catch { /* storage unavailable */ }
 }
 
 // Link that opens a submitted worksheet read-only, filled with the student's
