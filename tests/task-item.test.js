@@ -18,8 +18,8 @@ const openTask = {
   items: [{ text: 'Describe your favorite animal.', solution: '*I like dogs.*' }]
 };
 
-function mountItem(task, ii, answers, { checked = false, revealed = false, ti = 0 } = {}) {
-  return mount(TaskItem, { props: { task, ti, ii, answers, checked, revealed } });
+function mountItem(task, ii, answers, { checked = false, revealed = false, ti = 0, readonly = false } = {}) {
+  return mount(TaskItem, { props: { task, ti, ii, answers, checked, revealed, readonly } });
 }
 
 describe('TaskItem rendering', () => {
@@ -115,5 +115,17 @@ describe('TaskItem answer forwarding', () => {
     const wrapper = mountItem(choiceTask, 0, {});
     await wrapper.find('input[type="radio"][value="Yes"]').setValue();
     expect(wrapper.emitted('save')).toEqual([['0-0', 'Yes']]);
+  });
+});
+
+describe('TaskItem readonly mode', () => {
+  it('disables the control and the self-assessment checkbox when readonly', () => {
+    const choiceWrapper = mountItem(choiceTask, 0, {}, { readonly: true });
+    choiceWrapper.findAll('input[type="radio"]').forEach(radio =>
+      expect(radio.element.disabled).toBe(true)
+    );
+
+    const openWrapper = mountItem(openTask, 0, {}, { checked: true, readonly: true });
+    expect(openWrapper.find('.selfcheck input').element.disabled).toBe(true);
   });
 });

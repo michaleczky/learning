@@ -1,4 +1,4 @@
-import { loadSubmissions } from '../utils.js';
+import { loadSubmissions, submissionLink } from '../utils.js';
 
 export default {
   template: `
@@ -16,8 +16,8 @@ export default {
               <span class="muted"> – {{ sub.name }} – {{ formatDate(sub.date) }}</span>
             </p>
             <div class="url-container">
-              <input type="text" class="form-control" :value="sub.url" readonly 
-                     @click="copyUrl($event, sub.url)" />
+              <a :href="teacherLink(sub)" target="_blank" rel="noopener" class="submission-link">{{ teacherLink(sub) }}</a>
+              <button type="button" class="btn btn-outline-secondary btn-sm" @click="copyLink(sub)">Másolás</button>
             </div>
           </div>
         </div>
@@ -57,9 +57,11 @@ export default {
       if (!dateStr) return '';
       return new Date(dateStr).toLocaleString('hu-HU');
     },
-    copyUrl(event, url) {
-      event.target.select();
-      navigator.clipboard.writeText(url);
+    copyLink(sub) {
+      navigator.clipboard.writeText(this.teacherLink(sub));
+    },
+    teacherLink(sub) {
+      return submissionLink(this.worksheetId, sub.url);
     }
   }
 };

@@ -56,6 +56,36 @@ describe('TaskControl rendering by task type', () => {
   });
 });
 
+describe('TaskControl readonly mode', () => {
+  it('disables every control type when readonly is set', () => {
+    const task = { type: 'choice', options: ['Yes', 'No'] };
+    const radioWrapper = mount(TaskControl, { props: { task, ti: 0, ii: 0, value: '', readonly: true } });
+    radioWrapper.findAll('input[type="radio"]').forEach(radio =>
+      expect(radio.element.disabled).toBe(true)
+    );
+
+    const selectWrapper = mount(TaskControl, {
+      props: { task: { type: 'select', options: ['Red'] }, ti: 0, ii: 0, value: '', readonly: true }
+    });
+    expect(selectWrapper.find('select').element.disabled).toBe(true);
+
+    const textWrapper = mount(TaskControl, {
+      props: { task: { type: 'text', items: [] }, ti: 0, ii: 0, value: '', readonly: true }
+    });
+    expect(textWrapper.find('input[type="text"]').element.disabled).toBe(true);
+
+    const openWrapper = mount(TaskControl, {
+      props: { task: { type: 'open', items: [] }, ti: 0, ii: 0, value: '', readonly: true }
+    });
+    expect(openWrapper.find('textarea').element.disabled).toBe(true);
+  });
+
+  it('leaves controls enabled by default', () => {
+    const wrapper = mountControl({ type: 'text', items: [] });
+    expect(wrapper.find('input[type="text"]').element.disabled).toBe(false);
+  });
+});
+
 describe('TaskControl two-way binding', () => {
   it('emits update with ti, ii and the chosen option for choice tasks', async () => {
     const task = { type: 'choice', options: ['Yes', 'No'] };

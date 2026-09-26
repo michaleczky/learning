@@ -1,7 +1,7 @@
 import TaskItem from './TaskItem.js';
 import LeaderboardPanel from './LeaderboardPanel.js';
 import SubmissionsPanel from './SubmissionsPanel.js';
-import { loadAnswers, saveAnswers, getName, setName, loadSubmissions, saveSubmission, rich, isCorrect, answerText, itemKey } from '../utils.js';
+import { loadAnswers, saveAnswers, getName, setName, loadSubmissions, saveSubmission, submissionLink, rich, isCorrect, answerText, itemKey } from '../utils.js';
 import { saveAnswersToNpoint, submitToNpoint, isNpointConfigured } from '../../npoint-config.js';
 
 export default {
@@ -76,8 +76,8 @@ export default {
       </div>
 
       <div v-if="shareUrl" class="share-url">
-        <p>A válaszaid elmentésre kerültek. Ez a linket küld el a tanárdnak:</p>
-        <input type="text" class="form-control" :value="shareUrl" readonly 
+        <p>A válaszaid elmentésre kerültek. Ezt a linket küld el a tanárnak:</p>
+        <input type="text" class="form-control" :value="shareLink" readonly 
                @click="copyShareUrl" />
       </div>
     </div>
@@ -109,6 +109,9 @@ export default {
     }
   },
   computed: {
+    shareLink() {
+      return this.shareUrl ? submissionLink(this.worksheet.id, this.shareUrl) : null;
+    },
     scoreText() {
       if (!this.checked) return '';
       const { auto, autoOk, open, openOk } = this.computeScore();
@@ -190,8 +193,8 @@ export default {
       this.revealed = true;
     },
     copyShareUrl() {
-      if (this.shareUrl) {
-        navigator.clipboard.writeText(this.shareUrl);
+      if (this.shareLink) {
+        navigator.clipboard.writeText(this.shareLink);
       }
     },
     reset() {

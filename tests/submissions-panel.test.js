@@ -1,6 +1,7 @@
 // Unit tests for the SubmissionsPanel component: toggle visibility and
-// listing the submission URLs recorded in localStorage, with copying
-// handled through a stubbed clipboard API.
+// listing the submissions recorded in localStorage, each with a clickable
+// link that opens the filled worksheet in the read-only teacher view,
+// plus copying handled through a stubbed clipboard API.
 
 import { mount, flushPromises } from '@vue/test-utils';
 import { vi } from 'vitest';
@@ -13,6 +14,10 @@ const writeText = vi.fn();
 
 function mountPanel(id = worksheetId) {
   return mount(SubmissionsPanel, { props: { worksheetId: id } });
+}
+
+function expectedLink(url) {
+  return `http://localhost:3000/#/view-submission?ws=${worksheetId}&answers=${encodeURIComponent(url)}`;
 }
 
 beforeAll(() => {
@@ -47,7 +52,7 @@ describe('SubmissionsPanel toggle', () => {
 });
 
 describe('SubmissionsPanel listing', () => {
-  it('renders saved submissions with their share URLs', async () => {
+  it('renders each submission as a link that opens the filled worksheet', async () => {
     saveSubmission(worksheetId, 'https://api.npoint.io/doc1', 'Anna');
     const wrapper = mountPanel();
 
@@ -58,7 +63,11 @@ describe('SubmissionsPanel listing', () => {
     expect(items).toHaveLength(1);
     expect(items[0].text()).toContain('1. beküldés');
     expect(items[0].text()).toContain('Anna');
-    expect(items[0].find('input').element.value).toBe('https://api.npoint.io/doc1');
+
+    const link = items[0].find('a.submission-link');
+    expect(link.attributes('href')).toBe(expectedLink('https://api.npoint.io/doc1'));
+    expect(link.attributes('target')).toBe('_blank');
+    expect(link.text()).toBe(link.attributes('href'));
     expect(wrapper.vm.statusMessage).toBe('');
   });
 
@@ -70,8 +79,9 @@ describe('SubmissionsPanel listing', () => {
     await wrapper.vm.toggle();
     await flushPromises();
 
-    expect(wrapper.findAll('.submission-item')).toHaveLength(1);
-    expect(wrapper.find('input').element.value).toBe('https://api.npoint.io/doc1');
+    const links = wrapper.findAll('a.submission-link');
+    expect(links).toHaveLength(1);
+    expect(links[0].attributes('href')).toBe(expectedLink('https://api.npoint.io/doc1'));
   });
 
   it('shows an empty-state message for a worksheet without submissions', async () => {
@@ -86,15 +96,15 @@ describe('SubmissionsPanel listing', () => {
     expect(wrapper.findAll('.submission-item')).toHaveLength(0);
   });
 
-  it('copies the URL to the clipboard when the input is clicked', async () => {
+  it('copies the teacher-view link when Másolás is clicked', async () => {
     saveSubmission(worksheetId, 'https://api.npoint.io/doc1', 'Anna');
     const wrapper = mountPanel();
 
     await wrapper.vm.toggle();
     await flushPromises();
 
-    await wrapper.find('input').trigger('click');
+    await wrapper.find('.url-container button').trigger('click');
 
-    expect(writeText).toHaveBeenCalledWith('https://api.npoint.io/doc1');
+    expect(writeText).toHaveBeenCalledWith(expectedLink('https://api.npoint.io/doc1'));
   });
 });

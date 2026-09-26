@@ -81,6 +81,53 @@ describe('App hash routing', () => {
     expect(wrapper.find('.card').exists()).toBe(true);
   });
 
+  it('opens a submitted worksheet read-only through a view-submission link', async () => {
+    const answersUrl = 'https://api.npoint.io/doc1';
+    server.use(
+      http.get(answersUrl, () =>
+        HttpResponse.json({
+          worksheetId: 'test-worksheet',
+          studentName: 'Anna',
+          savedAt: '2026-09-20T10:30:00.000Z',
+          answers: { '0-0': 'Yes' }
+        })
+      )
+    );
+    const wrapper = mount(App);
+    await flushPromises();
+
+    location.hash = `#/view-submission?ws=test-worksheet&answers=${encodeURIComponent(answersUrl)}`;
+    window.dispatchEvent(new Event('hashchange'));
+    await flushPromises();
+
+    expect(wrapper.vm.currentWorksheet?.id).toBe('test-worksheet');
+    expect(wrapper.vm.submissionAnswersUrl).toBe(answersUrl);
+    expect(wrapper.find('.submission-viewer').exists()).toBe(true);
+    expect(wrapper.find('.toolbar').exists()).toBe(false);
+    expect(wrapper.text()).toContain('Beküldte: Anna');
+    expect(wrapper.find('input[type="radio"]').element.disabled).toBe(true);
+
+    location.hash = '';
+    window.dispatchEvent(new Event('hashchange'));
+    await flushPromises();
+
+    expect(wrapper.vm.submissionAnswersUrl).toBeNull();
+    expect(wrapper.find('h1').text()).toBe('Feladatlapok');
+  });
+
+  it('stays on the list for a view-submission link to an unknown worksheet', async () => {
+    const wrapper = mount(App);
+    await flushPromises();
+
+    location.hash = `#/view-submission?ws=does-not-exist&answers=${encodeURIComponent('https://api.npoint.io/doc1')}`;
+    window.dispatchEvent(new Event('hashchange'));
+    await flushPromises();
+
+    expect(wrapper.vm.currentWorksheet).toBeNull();
+    expect(wrapper.vm.submissionAnswersUrl).toBeNull();
+    expect(wrapper.find('.card').exists()).toBe(true);
+  });
+
   it('removes the hashchange listener on unmount', async () => {
     const removeSpy = vi.spyOn(window, 'removeEventListener');
     const wrapper = mount(App);

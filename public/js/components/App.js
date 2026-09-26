@@ -1,18 +1,21 @@
 import WorksheetList from './WorksheetList.js';
 import WorksheetViewer from './WorksheetViewer.js';
+import SubmissionViewer from './SubmissionViewer.js';
 
 export default {
-  components: { WorksheetList, WorksheetViewer },
+  components: { WorksheetList, WorksheetViewer, SubmissionViewer },
   template: `
     <div>
       <WorksheetList v-if="!currentWorksheet" :worksheets="worksheets" />
+      <SubmissionViewer v-else-if="submissionAnswersUrl" :worksheet="currentWorksheet" :answersUrl="submissionAnswersUrl" />
       <WorksheetViewer v-else :worksheet="currentWorksheet" />
     </div>
   `,
   data() {
     return {
       worksheets: [],
-      currentWorksheet: null
+      currentWorksheet: null,
+      submissionAnswersUrl: null
     };
   },
   watch: {
@@ -49,7 +52,16 @@ export default {
       this.route();
     },
     route() {
-      const id = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
+      const hash = location.hash.replace(/^#\/?/, '');
+      if (hash.startsWith('view-submission')) {
+        const params = new URLSearchParams(hash.split('?')[1] || '');
+        const ws = this.worksheets.find(w => w.id === params.get('ws'));
+        this.currentWorksheet = ws || null;
+        this.submissionAnswersUrl = ws ? params.get('answers') : null;
+        return;
+      }
+      this.submissionAnswersUrl = null;
+      const id = decodeURIComponent(hash);
       if (!id) {
         this.currentWorksheet = null;
         return;

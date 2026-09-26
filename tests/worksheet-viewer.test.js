@@ -78,6 +78,22 @@ describe('WorksheetViewer answer persistence', () => {
     expect(submissions['test-worksheet'][0].url).toBe('https://api.npoint.io/created1');
     expect(submissions['test-worksheet'][0].name).toBe('Anna');
   });
+
+  it('shows the teacher-view link in the share box, not the raw API URL', async () => {
+    const wrapper = mountViewer();
+    await flushPromises();
+    wrapper.vm.studentName = 'Anna';
+    await flushPromises();
+
+    await wrapper.vm.check();
+    await flushPromises();
+
+    expect(wrapper.vm.shareLink).toBe(
+      'http://localhost:3000/#/view-submission?ws=test-worksheet&answers=' +
+      encodeURIComponent('https://api.npoint.io/created1')
+    );
+    expect(wrapper.find('.share-url input').element.value).toBe(wrapper.vm.shareLink);
+  });
 });
 
 describe('WorksheetViewer feedback and solutions', () => {

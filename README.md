@@ -12,10 +12,12 @@ A static HTML + JS website for school practice worksheets. Worksheets are JSON f
 The browser doesn't allow loading JSON files from `file://` protocol, so you need a local server:
 
 ```bash
-python3 -m http.server 8000 --directory public
+python3 serve.py
 ```
 
 Then open: http://localhost:8000
+
+Use `serve.py` instead of `python3 -m http.server`: it sends a `Cache-Control: no-cache` header, so the browser revalidates every file on each load and never shows stale JavaScript after you edit something. (Without the header, browsers fall back to heuristic caching.) Unchanged files still come back as cheap 304 responses.
 
 ## Testing
 
@@ -32,6 +34,8 @@ The site is deployed by the "Deploy to Pages" workflow (`.github/workflows/deplo
 1. Push the repository to GitHub.
 2. In the repository settings (Settings → Pages), set Source to **GitHub Actions** (once).
 3. The site will be available at `https://michaleczky.github.io/learning/`.
+
+Note on caching: GitHub Pages does not allow custom `Cache-Control`/expiration headers, but it serves every file with a 10-minute cache TTL, so browsers pick up changes at most 10 minutes after a deploy. For instant production updates the site would need cache-busting version parameters on its asset URLs (a small build step).
 
 The `.nojekyll` file prevents GitHub Pages from running the Jekyll processor.
 
@@ -71,7 +75,7 @@ const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/your-default-id";
 
 ### How It Works
 
-- **Answer Sharing**: When a student clicks **Check**, their answers are saved to a new npoint.io document. A unique URL appears that they can copy and send to their tutor. These URLs are also saved in `localStorage` under "Beküldött feladatok" (Submitted worksheets) for later access.
+- **Answer Sharing**: When a student clicks **Check**, their answers are saved to a new npoint.io document. A unique URL appears that they can copy and send to their tutor. Opening this link shows the filled worksheet read-only, with the student's answers, the per-item feedback, and the score — the tutor does not see raw JSON. These URLs are also saved in `localStorage` under "Beküldött feladatok" (Submitted worksheets) for later access.
 
 - **Leaderboard**: The name entered at the top of the worksheet is saved by the browser (`localStorage`). If the worksheet has a configured endpoint and the student confirms, their score is sent to npoint.io. The **Leaderboard** button shows the top 20 submissions for the current worksheet, sorted by score.
 
@@ -141,6 +145,7 @@ Every task has `title`, `instruction`, optional `hint`, `type`, and `items` fiel
 - **Check**: grades automatically gradable tasks, shows sample solutions for open-ended ones, and creates a shareable URL with all answers.
 - **Solutions**: shows all solutions.
 - **Start Over**: clears answers for the current worksheet.
-- **Beküldött feladatok** (Submitted worksheets): view all your previously submitted answer URLs for the current worksheet.
+- **Beküldött feladatok** (Submitted worksheets): view all your previously submitted answer URLs for the current worksheet. Each submission also has a link that opens the filled worksheet read-only with the answers and the result — this is the link students send to the teacher.
 - Answers are saved in the browser's `localStorage`, per worksheet.
 - Answer URLs are also stored in `localStorage` so students can return later and resend them.
+- The teacher-view link (`#/view-submission?ws=<id>&answers=<npoint URL>`) opens the submitted worksheet filled with the student's answers and the result, in read-only mode.

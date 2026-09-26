@@ -63,6 +63,14 @@ export function saveSubmission(worksheetId, url, name) {
   } catch { /* storage unavailable */ }
 }
 
+// Link that opens a submitted worksheet read-only, filled with the student's
+// answers and the result. Built for the teacher the student sends it to.
+export function submissionLink(worksheetId, answersUrl) {
+  const base = location.href.split('#')[0];
+  const params = new URLSearchParams({ ws: worksheetId, answers: answersUrl });
+  return `${base}#/view-submission?${params.toString()}`;
+}
+
 // Task item key generator
 export function itemKey(ti, ii) {
   return `${ti}-${ii}`;

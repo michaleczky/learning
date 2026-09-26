@@ -13,6 +13,7 @@ export default {
           :ti="ti" 
           :ii="ii" 
           :value="answers[key] ?? ''" 
+          :readonly="readonly"
           @update="onUpdate"
         />
       </div>
@@ -28,6 +29,7 @@ export default {
           <input 
             type="checkbox" 
             :checked="selfChecked" 
+            :disabled="readonly"
             @change="onSelfCheck"
           />
           Ez sikerült (önértékelés)
@@ -39,7 +41,7 @@ export default {
       </div>
     </li>
   `,
-  props: ['task', 'ti', 'ii', 'answers', 'checked', 'revealed'],
+  props: ['task', 'ti', 'ii', 'answers', 'checked', 'revealed', 'readonly'],
   computed: {
     key() {
       return itemKey(this.ti, this.ii);

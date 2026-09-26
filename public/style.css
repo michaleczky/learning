@@ -175,8 +175,20 @@ textarea { min-height: 4.5rem; resize: vertical; }
 .leaderboard-list .lb-when { font-size: 0.85rem; white-space: nowrap; }
 
 .submissions-list .muted { margin: 0; }
-.url-container { margin: 0.3rem 0 0.75rem; }
-.url-container .form-control { margin-bottom: 0; }
+.url-container {
+  margin: 0.3rem 0 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.submission-link { word-break: break-all; }
+
+/* Submitted worksheet (teacher view) */
+
+.submission-viewer .ws-head { border-bottom: 1px solid var(--bs-border-color); padding-bottom: 0.9rem; }
+.submission-meta { margin: 0.4rem 0 0; }
+.submission-viewer .score { margin: 0.4rem 0 0; }
 
 /* Toolbar */
 
