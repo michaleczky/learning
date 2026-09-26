@@ -58,7 +58,8 @@ export default {
       navigator.clipboard.writeText(this.teacherLink(sub));
     },
     teacherLink(sub) {
-      return submissionLink(this.worksheetId, sub.url);
+      // Older saved entries store the full API URL; both work in the link.
+      return submissionLink(this.worksheetId, sub.docId || sub.url);
     }
   }
 };

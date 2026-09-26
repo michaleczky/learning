@@ -38,7 +38,7 @@ export default {
   methods: {
     async loadLeaderboard() {
       if (!isNpointConfigured(this.worksheet)) {
-        this.statusMessage = 'A ranglista nincs beállítva a feladatlaphoz (add npointEndpoint a JSON-hez).';
+        this.statusMessage = 'A ranglista nincs beállítva a feladatlaphoz (add leaderboardNpointDocId a JSON-hez).';
         this.submissions = [];
         return;
       }

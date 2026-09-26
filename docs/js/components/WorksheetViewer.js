@@ -76,7 +76,7 @@ export default {
         <span class="score">{{ scoreText }}</span>
       </div>
 
-      <div v-if="shareUrl" class="share-url">
+      <div v-if="shareDocId" class="share-url">
         <p>A válaszaid elmentésre kerültek. Ezt a linket küld el a tanárnak:</p>
         <input type="text" class="form-control" :value="shareLink" readonly 
                @click="copyShareUrl" />
@@ -91,7 +91,7 @@ export default {
       revealed: false,
       activeTab: 'worksheet',
       studentName: getName(),
-      shareUrl: null,
+      shareDocId: null,
       leaderboardVersion: 0
     };
   },
@@ -112,7 +112,7 @@ export default {
   },
   computed: {
     shareLink() {
-      return this.shareUrl ? submissionLink(this.worksheet.id, this.shareUrl) : null;
+      return this.shareDocId ? submissionLink(this.worksheet.id, this.shareDocId) : null;
     },
     scoreText() {
       if (!this.checked) return '';
@@ -155,11 +155,11 @@ export default {
       
       // Save answers to npoint.io
       const name = this.studentName.trim() || 'Anonymous';
-      saveAnswersToNpoint(this.worksheet, this.answers, name).then(url => {
-        if (url) {
-          saveSubmission(this.worksheet.id, url, name);
+      saveAnswersToNpoint(this.worksheet, this.answers, name).then(docId => {
+        if (docId) {
+          saveSubmission(this.worksheet.id, docId, name);
           if (name !== 'Anonymous') {
-            this.shareUrl = url;
+            this.shareDocId = docId;
           }
         }
       });

@@ -31,11 +31,11 @@ export function loadSubmissions() {
   try { return JSON.parse(localStorage.getItem(SUBMISSIONS_KEY)) || {}; } catch { return {}; }
 }
 
-export function saveSubmission(worksheetId, url, name) {
+export function saveSubmission(worksheetId, docId, name) {
   try {
     const submissions = loadSubmissions();
     if (!submissions[worksheetId]) submissions[worksheetId] = [];
-    submissions[worksheetId].push({ url, name, date: new Date().toISOString() });
+    submissions[worksheetId].push({ docId, name, date: new Date().toISOString() });
     localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(submissions));
   } catch { /* storage unavailable */ }
 }

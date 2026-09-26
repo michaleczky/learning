@@ -1,20 +1,28 @@
 // npoint.io configuration for storing leaderboard submissions
 // 
-// Each worksheet can have its own endpoint stored in the worksheet JSON file
-// as `npointEndpoint`. Alternatively, set a default central endpoint below.
+// Each worksheet can have its own leaderboard, configured in the worksheet
+// JSON as `leaderboardNpointDocId` (the document ID from the npoint.io API
+// URL). Alternatively, set a default document ID below.
 //
-// To create an endpoint for a worksheet:
+// To create a leaderboard for a worksheet:
 //   Visit https://www.npoint.io and create a new document in the editor
 //   Copy its API URL (e.g., https://api.npoint.io/xxxx-xxxx)
-//   Add it to your worksheet JSON: "npointEndpoint": "https://api.npoint.io/xxxx-xxxx"
+//   Add its document ID to your worksheet JSON: "leaderboardNpointDocId": "xxxx-xxxx"
 
-// Default endpoint (used if worksheet doesn't have its own). Leave empty to
-// disable the leaderboard for worksheets without an npointEndpoint.
-export const DEFAULT_NPOINT_ENDPOINT = "";
+// Default document ID (used if worksheet doesn't have its own). Leave empty to
+// disable the leaderboard for worksheets without a leaderboardNpointDocId.
+export const DEFAULT_NPOINT_DOC_ID = "";
 
-// Get endpoint for a specific worksheet
+// API URL of an npoint.io document. Accepts a bare document ID, or a full
+// URL for values saved before the switch to IDs.
+export function npointApiUrl(docIdOrUrl) {
+  return /^https?:\/\//.test(docIdOrUrl) ? docIdOrUrl : `https://api.npoint.io/${docIdOrUrl}`;
+}
+
+// Get the leaderboard endpoint URL for a specific worksheet ("" if unconfigured)
 export function getEndpointForWorksheet(worksheet) {
-  return worksheet?.npointEndpoint || DEFAULT_NPOINT_ENDPOINT;
+  const docId = worksheet?.leaderboardNpointDocId || DEFAULT_NPOINT_DOC_ID;
+  return docId ? npointApiUrl(docId) : "";
 }
 
 // Helper to check if npoint.io is configured
@@ -26,7 +34,7 @@ export function isNpointConfigured(worksheet) {
 export async function submitToNpoint(submission, worksheet) {
   const endpoint = getEndpointForWorksheet(worksheet);
   if (!isNpointConfigured(worksheet)) {
-    console.warn('npoint.io is not configured for this worksheet. Add npointEndpoint to the worksheet JSON.');
+    console.warn('npoint.io is not configured for this worksheet. Add leaderboardNpointDocId to the worksheet JSON.');
     return;
   }
 
@@ -69,7 +77,7 @@ export async function submitToNpoint(submission, worksheet) {
   }
 }
 
-// Create a new empty npoint.io document and return its API URL.
+// Create a new empty npoint.io document and return its document ID.
 // Note: POSTing to https://api.npoint.io/ does NOT create documents (it
 // returns 500). Documents are created via the website's own route, which
 // needs no authentication or CSRF token.
@@ -90,11 +98,12 @@ async function createNpointDocument() {
   if (!doc.api_url) {
     throw new Error('npoint.io did not return a document URL');
   }
-  return doc.api_url;
+  // Keep only the document ID (the last path segment of the API URL).
+  return doc.api_url.split('/').pop();
 }
 
-// Save student answers to a new npoint.io document and return the URL
-// Returns the URL where the answers are stored, or null on error
+// Save student answers to a new npoint.io document and return its document ID.
+// Returns null on error.
 export async function saveAnswersToNpoint(worksheet, answers, studentName) {
   try {
     const data = {
@@ -106,9 +115,9 @@ export async function saveAnswersToNpoint(worksheet, answers, studentName) {
     };
 
     // Create a new document, then fill it with the answers
-    const apiUrl = await createNpointDocument();
+    const docId = await createNpointDocument();
 
-    const response = await fetch(apiUrl, {
+    const response = await fetch(npointApiUrl(docId), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +129,7 @@ export async function saveAnswersToNpoint(worksheet, answers, studentName) {
       throw new Error(`Failed to save: ${response.status}`);
     }
 
-    return apiUrl;
+    return docId;
   } catch (err) {
     console.error('Error saving answers to npoint.io:', err);
     return null;

@@ -8,7 +8,8 @@ import SubmissionViewer from '../docs/js/components/SubmissionViewer.js';
 import worksheet from '../docs/data/test-worksheet.json';
 import { server } from './mocks/server.js';
 
-const answersUrl = 'https://api.npoint.io/doc1';
+const answersDocId = 'doc1';
+const answersApiUrl = 'https://api.npoint.io/doc1';
 
 const submission = {
   worksheetId: 'test-worksheet',
@@ -18,15 +19,15 @@ const submission = {
   answers: { '0-0': 'Yes', '0-1': 'Maybe', '1-0': '4', '2-0': 'Blue', '3-0': 'I like dogs.' }
 };
 
-function mountViewer(answersUrlOverride = answersUrl) {
+function mountViewer(docIdOverride = answersDocId) {
   return mount(SubmissionViewer, {
-    props: { worksheet, answersUrl: answersUrlOverride }
+    props: { worksheet, answersDocId: docIdOverride }
   });
 }
 
 beforeEach(() => {
   server.use(
-    http.get(answersUrl, () => HttpResponse.json(submission))
+    http.get(answersApiUrl, () => HttpResponse.json(submission))
   );
 });
 
@@ -43,7 +44,7 @@ describe('SubmissionViewer loading', () => {
 
   it('shows an error message when the document cannot be loaded', async () => {
     server.use(
-      http.get(answersUrl, () => new HttpResponse(null, { status: 404 }))
+      http.get(answersApiUrl, () => new HttpResponse(null, { status: 404 }))
     );
     const wrapper = mountViewer();
     await flushPromises();
@@ -53,7 +54,7 @@ describe('SubmissionViewer loading', () => {
     expect(wrapper.find('.task').exists()).toBe(false);
   });
 
-  it('reloads when the answers URL changes', async () => {
+  it('reloads when the answers document changes', async () => {
     server.use(
       http.get('https://api.npoint.io/doc2', () =>
         HttpResponse.json({ ...submission, studentName: 'Péter' })
@@ -62,7 +63,7 @@ describe('SubmissionViewer loading', () => {
     const wrapper = mountViewer();
     await flushPromises();
 
-    await wrapper.setProps({ answersUrl: 'https://api.npoint.io/doc2' });
+    await wrapper.setProps({ answersDocId: 'doc2' });
     await flushPromises();
 
     expect(wrapper.vm.studentName).toBe('Péter');
@@ -118,7 +119,7 @@ describe('SubmissionViewer rendering', () => {
 
   it('counts a self-assessed open answer in the score', async () => {
     server.use(
-      http.get(answersUrl, () =>
+      http.get(answersApiUrl, () =>
         HttpResponse.json({ ...submission, answers: { ...submission.answers, '3-0:ok': true } })
       )
     );

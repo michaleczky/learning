@@ -7,7 +7,7 @@ export default {
   template: `
     <div>
       <WorksheetList v-if="!currentWorksheet" :worksheets="worksheets" />
-      <SubmissionViewer v-else-if="submissionAnswersUrl" :worksheet="currentWorksheet" :answersUrl="submissionAnswersUrl" />
+      <SubmissionViewer v-else-if="submissionAnswersDocId" :worksheet="currentWorksheet" :answersDocId="submissionAnswersDocId" />
       <WorksheetViewer v-else :worksheet="currentWorksheet" />
     </div>
   `,
@@ -15,7 +15,7 @@ export default {
     return {
       worksheets: [],
       currentWorksheet: null,
-      submissionAnswersUrl: null
+      submissionAnswersDocId: null
     };
   },
   watch: {
@@ -57,10 +57,10 @@ export default {
         const params = new URLSearchParams(hash.split('?')[1] || '');
         const ws = this.worksheets.find(w => w.id === params.get('ws'));
         this.currentWorksheet = ws || null;
-        this.submissionAnswersUrl = ws ? params.get('answers') : null;
+        this.submissionAnswersDocId = ws ? params.get('answers') : null;
         return;
       }
-      this.submissionAnswersUrl = null;
+      this.submissionAnswersDocId = null;
       const id = decodeURIComponent(hash);
       if (!id) {
         this.currentWorksheet = null;

@@ -9,7 +9,7 @@ import { http, HttpResponse } from 'msw';
 import LeaderboardPanel from '../docs/js/components/LeaderboardPanel.js';
 import { server } from './mocks/server.js';
 
-const worksheet = { id: 'ws1', title: 'Ws1', npointEndpoint: 'https://api.npoint.io/ep1' };
+const worksheet = { id: 'ws1', title: 'Ws1', leaderboardNpointDocId: 'ep1' };
 
 const items = [
   { name: 'Anna', score: 5, max: 10, createdAt: '2026-09-01T10:00:00.000Z' },

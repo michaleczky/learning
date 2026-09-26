@@ -63,19 +63,19 @@ describe('WorksheetViewer answer persistence', () => {
     expect(captures.savedBodies[0].answers).toEqual({ '0-0': 'Yes', '1-0': '4' });
   });
 
-  it('stores the returned share URL and records the submission', async () => {
+  it('stores the returned share document ID and records the submission', async () => {
     const wrapper = mountViewer();
     await flushPromises();
-    wrapper.vm.studentName = 'Anna'; // shareUrl is only shown for named students
+    wrapper.vm.studentName = 'Anna'; // share box is only shown for named students
     await flushPromises();
 
     await wrapper.vm.check();
     await flushPromises();
 
-    expect(wrapper.vm.shareUrl).toBe('https://api.npoint.io/created1');
+    expect(wrapper.vm.shareDocId).toBe('created1');
 
     const submissions = JSON.parse(localStorage.getItem('learning:submissions'));
-    expect(submissions['test-worksheet'][0].url).toBe('https://api.npoint.io/created1');
+    expect(submissions['test-worksheet'][0].docId).toBe('created1');
     expect(submissions['test-worksheet'][0].name).toBe('Anna');
   });
 
@@ -89,8 +89,7 @@ describe('WorksheetViewer answer persistence', () => {
     await flushPromises();
 
     expect(wrapper.vm.shareLink).toBe(
-      'http://localhost:3000/#/view-submission?ws=test-worksheet&answers=' +
-      encodeURIComponent('https://api.npoint.io/created1')
+      'http://localhost:3000/#/view-submission?ws=test-worksheet&answers=created1'
     );
     expect(wrapper.find('.share-url input').element.value).toBe(wrapper.vm.shareLink);
   });
@@ -178,7 +177,7 @@ describe('WorksheetViewer tab pages', () => {
     expect(wrapper.vm.activeTab).toBe('leaderboard');
     expect(tab.classes()).toContain('active');
     expect(isShown(wrapper, '.leaderboard-panel')).toBe(true);
-    // test-worksheet has no npointEndpoint, so the panel reports it is unconfigured
+    // test-worksheet has no leaderboardNpointDocId, so the panel reports it is unconfigured
     expect(wrapper.find('.leaderboard-panel').text()).toContain('A ranglista nincs beállítva');
     expect(isShown(wrapper, '.task')).toBe(false);
   });

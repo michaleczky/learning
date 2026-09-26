@@ -48,29 +48,29 @@ All grading happens entirely in the browser (the `data/*.json` files also contai
 
 ### Setup Options
 
-**Option A: Per-worksheet endpoints (Recommended)**
+**Option A: Per-worksheet leaderboards (Recommended)**
 
-Each worksheet can have its own leaderboard endpoint. Add an `npointEndpoint` field to your worksheet JSON:
+Each worksheet can have its own leaderboard. Add a `leaderboardNpointDocId` field to your worksheet JSON:
 
 ```json
 {
   "id": "unique-identifier",
   "title": "Worksheet Title",
   "subject": "Subject",
-  "npointEndpoint": "https://api.npoint.io/your-unique-id-here",
+  "leaderboardNpointDocId": "your-unique-id-here",
   "tasks": [ ... ]
 }
 ```
 
-To create an endpoint for a worksheet, create a new document in the editor at [npoint.io](https://www.npoint.io), then copy its API URL (e.g. `https://api.npoint.io/xxxx-xxxx`) and add it to your worksheet.
+To create a leaderboard for a worksheet, create a new document in the editor at [npoint.io](https://www.npoint.io), then copy its API URL (e.g. `https://api.npoint.io/xxxx-xxxx`) and add its document ID (`xxxx-xxxx`) to your worksheet.
 
 **Option B: Default central endpoint**
 
-If a worksheet doesn't have an `npointEndpoint`, the app falls back to `DEFAULT_NPOINT_ENDPOINT` in `docs/npoint-config.js` (empty by default — worksheets without an endpoint simply have no leaderboard).
+If a worksheet doesn't have a `leaderboardNpointDocId`, the app falls back to `DEFAULT_NPOINT_DOC_ID` in `docs/npoint-config.js` (empty by default — worksheets without a document simply have no leaderboard).
 
 Set it in `docs/npoint-config.js`:
 ```javascript
-const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/your-default-id";
+export const DEFAULT_NPOINT_DOC_ID = "your-default-id";
 ```
 
 ### How It Works
@@ -95,7 +95,7 @@ const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/your-default-id";
   "subject": "Subject",
   "grade": 8,
   "description": "Brief description (optional).",
-  "npointEndpoint": "https://api.npoint.io/your-unique-id-here",
+  "leaderboardNpointDocId": "your-unique-id-here",
   "tasks": [ ... ]
 }
 ```
@@ -103,7 +103,7 @@ const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/your-default-id";
 The `id` also appears in the URL (`#/unique-identifier`) and is the key for saved answers, so it should be unique and not change.
 
 **Optional Fields:**
-- `npointEndpoint`: Unique npoint.io URL for this worksheet's leaderboard. If not provided, falls back to `DEFAULT_NPOINT_ENDPOINT`.
+- `leaderboardNpointDocId`: npoint.io document ID for this worksheet's leaderboard. If not provided, falls back to `DEFAULT_NPOINT_DOC_ID`.
 
 ### Task Types
 

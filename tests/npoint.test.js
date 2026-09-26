@@ -10,14 +10,14 @@ import { captures, leaderboardItems } from './mocks/handlers.js';
 const worksheet = {
   id: 'ws1',
   title: 'Test Worksheet',
-  npointEndpoint: 'https://api.npoint.io/ep1'
+  leaderboardNpointDocId: 'ep1'
 };
 
 describe('saveAnswersToNpoint', () => {
   it('creates a document and saves the answers into it', async () => {
-    const url = await cfg.saveAnswersToNpoint(worksheet, { '0-0': 'Yes' }, 'Anna');
+    const docId = await cfg.saveAnswersToNpoint(worksheet, { '0-0': 'Yes' }, 'Anna');
 
-    expect(url).toBe('https://api.npoint.io/created1');
+    expect(docId).toBe('created1');
     expect(captures.createdDocuments).toEqual([{}]);
 
     const saved = captures.savedBodies[0];
@@ -36,9 +36,9 @@ describe('saveAnswersToNpoint', () => {
     );
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const url = await cfg.saveAnswersToNpoint(worksheet, { '0-0': 'Yes' }, 'Anna');
+    const docId = await cfg.saveAnswersToNpoint(worksheet, { '0-0': 'Yes' }, 'Anna');
 
-    expect(url).toBeNull();
+    expect(docId).toBeNull();
     expect(captures.savedBodies).toHaveLength(0);
     expect(consoleError).toHaveBeenCalled();
     consoleError.mockRestore();
@@ -80,15 +80,20 @@ describe('loadSubmissionsFromNpoint', () => {
 });
 
 describe('endpoint configuration', () => {
-  it('falls back to the default endpoint when the worksheet has none', () => {
-    expect(cfg.getEndpointForWorksheet({ id: 'x' })).toBe(cfg.DEFAULT_NPOINT_ENDPOINT);
+  it('falls back to the default document when the worksheet has none', () => {
+    expect(cfg.getEndpointForWorksheet({ id: 'x' })).toBe('');
     expect(cfg.getEndpointForWorksheet(worksheet)).toBe('https://api.npoint.io/ep1');
     expect(cfg.isNpointConfigured(worksheet)).toBe(true);
   });
 
   it('reports worksheets without an endpoint as unconfigured', () => {
-    expect(cfg.DEFAULT_NPOINT_ENDPOINT).toBe('');
+    expect(cfg.DEFAULT_NPOINT_DOC_ID).toBe('');
     expect(cfg.isNpointConfigured({ id: 'x' })).toBe(false);
     expect(cfg.isNpointConfigured(null)).toBe(false);
+  });
+
+  it('builds API URLs from bare document IDs and passes full URLs through', () => {
+    expect(cfg.npointApiUrl('abc123')).toBe('https://api.npoint.io/abc123');
+    expect(cfg.npointApiUrl('https://api.npoint.io/abc123')).toBe('https://api.npoint.io/abc123');
   });
 });

@@ -28,9 +28,10 @@ export function answerText(answer) {
 
 // Link that opens a submitted worksheet read-only, filled with the student's
 // answers and the result. Built for the teacher the student sends it to.
-export function submissionLink(worksheetId, answersUrl) {
+// The answers parameter is the npoint.io document ID holding the answers.
+export function submissionLink(worksheetId, answersDocId) {
   const base = location.href.split('#')[0];
-  const params = new URLSearchParams({ ws: worksheetId, answers: answersUrl });
+  const params = new URLSearchParams({ ws: worksheetId, answers: answersDocId });
   return `${base}#/view-submission?${params.toString()}`;
 }
 

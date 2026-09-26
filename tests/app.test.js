@@ -82,9 +82,9 @@ describe('App hash routing', () => {
   });
 
   it('opens a submitted worksheet read-only through a view-submission link', async () => {
-    const answersUrl = 'https://api.npoint.io/doc1';
+    const answersDocId = 'doc1';
     server.use(
-      http.get(answersUrl, () =>
+      http.get('https://api.npoint.io/doc1', () =>
         HttpResponse.json({
           worksheetId: 'test-worksheet',
           studentName: 'Anna',
@@ -96,12 +96,12 @@ describe('App hash routing', () => {
     const wrapper = mount(App);
     await flushPromises();
 
-    location.hash = `#/view-submission?ws=test-worksheet&answers=${encodeURIComponent(answersUrl)}`;
+    location.hash = `#/view-submission?ws=test-worksheet&answers=${encodeURIComponent(answersDocId)}`;
     window.dispatchEvent(new Event('hashchange'));
     await flushPromises();
 
     expect(wrapper.vm.currentWorksheet?.id).toBe('test-worksheet');
-    expect(wrapper.vm.submissionAnswersUrl).toBe(answersUrl);
+    expect(wrapper.vm.submissionAnswersDocId).toBe(answersDocId);
     expect(wrapper.find('.submission-viewer').exists()).toBe(true);
     expect(wrapper.find('.toolbar').exists()).toBe(false);
     expect(wrapper.text()).toContain('Beküldte: Anna');
@@ -111,7 +111,7 @@ describe('App hash routing', () => {
     window.dispatchEvent(new Event('hashchange'));
     await flushPromises();
 
-    expect(wrapper.vm.submissionAnswersUrl).toBeNull();
+    expect(wrapper.vm.submissionAnswersDocId).toBeNull();
     expect(wrapper.find('h1').text()).toBe('Feladatlapok');
   });
 
@@ -119,12 +119,12 @@ describe('App hash routing', () => {
     const wrapper = mount(App);
     await flushPromises();
 
-    location.hash = `#/view-submission?ws=does-not-exist&answers=${encodeURIComponent('https://api.npoint.io/doc1')}`;
+    location.hash = `#/view-submission?ws=does-not-exist&answers=doc1`;
     window.dispatchEvent(new Event('hashchange'));
     await flushPromises();
 
     expect(wrapper.vm.currentWorksheet).toBeNull();
-    expect(wrapper.vm.submissionAnswersUrl).toBeNull();
+    expect(wrapper.vm.submissionAnswersDocId).toBeNull();
     expect(wrapper.find('.card').exists()).toBe(true);
   });
 
