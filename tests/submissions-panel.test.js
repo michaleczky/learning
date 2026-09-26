@@ -5,8 +5,8 @@
 
 import { mount, flushPromises } from '@vue/test-utils';
 import { vi } from 'vitest';
-import SubmissionsPanel from '../public/js/components/SubmissionsPanel.js';
-import { saveSubmission } from '../public/js/storage.js';
+import SubmissionsPanel from '../docs/js/components/SubmissionsPanel.js';
+import { saveSubmission } from '../docs/js/storage.js';
 
 const worksheetId = 'ws1';
 

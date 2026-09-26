@@ -4,8 +4,8 @@
 
 import { mount, flushPromises } from '@vue/test-utils';
 import { http, HttpResponse } from 'msw';
-import SubmissionViewer from '../public/js/components/SubmissionViewer.js';
-import worksheet from '../public/data/test-worksheet.json';
+import SubmissionViewer from '../docs/js/components/SubmissionViewer.js';
+import worksheet from '../docs/data/test-worksheet.json';
 import { server } from './mocks/server.js';
 
 const answersUrl = 'https://api.npoint.io/doc1';

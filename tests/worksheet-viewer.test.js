@@ -3,8 +3,8 @@
 // and asserts saved answers are loaded from localStorage and rendered.
 
 import { mount, flushPromises } from '@vue/test-utils';
-import WorksheetViewer from '../public/js/components/WorksheetViewer.js';
-import worksheet from '../public/data/test-worksheet.json';
+import WorksheetViewer from '../docs/js/components/WorksheetViewer.js';
+import worksheet from '../docs/data/test-worksheet.json';
 import { captures } from './mocks/handlers';
 
 const storageKey = 'learning:test-worksheet';

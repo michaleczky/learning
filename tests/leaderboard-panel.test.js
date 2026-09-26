@@ -6,7 +6,7 @@
 
 import { mount, flushPromises } from '@vue/test-utils';
 import { http, HttpResponse } from 'msw';
-import LeaderboardPanel from '../public/js/components/LeaderboardPanel.js';
+import LeaderboardPanel from '../docs/js/components/LeaderboardPanel.js';
 import { server } from './mocks/server.js';
 
 const worksheet = { id: 'ws1', title: 'Ws1', npointEndpoint: 'https://api.npoint.io/ep1' };

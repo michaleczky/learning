@@ -1,10 +1,10 @@
 # Practice Worksheets
 
-A static HTML + JS website for school practice worksheets. Worksheets are JSON files in the `public/data/` directory, which the page loads and makes fillable. No build step required. The UI is based on [Bootstrap 5](https://getbootstrap.com), loaded from a CDN; `public/style.css` only adds the app-specific layout on top of it.
+A static HTML + JS website for school practice worksheets. Worksheets are JSON files in the `docs/data/` directory, which the page loads and makes fillable. No build step required. The UI is based on [Bootstrap 5](https://getbootstrap.com), loaded from a CDN; `docs/style.css` only adds the app-specific layout on top of it.
 
 ## Repository Layout
 
-- `public/` – the published website (deployed to GitHub Pages by `.github/workflows/deploy.yml`)
+- `docs/` – the published website (deployed to GitHub Pages by `.github/workflows/deploy.yml`)
 - `tests/` – Vue component integration tests (not published)
 
 ## Running Locally
@@ -29,7 +29,7 @@ cd tests && npm install && npm test
 
 ## Publishing on GitHub Pages
 
-The site is deployed by the "Deploy to Pages" workflow (`.github/workflows/deploy.yml`), which publishes only the `public/` folder on every push to `main`.
+The site is deployed by the "Deploy to Pages" workflow (`.github/workflows/deploy.yml`), which publishes only the `docs/` folder on every push to `main`.
 
 1. Push the repository to GitHub.
 2. In the repository settings (Settings → Pages), set Source to **GitHub Actions** (once).
@@ -66,9 +66,9 @@ To create an endpoint for a worksheet, create a new document in the editor at [n
 
 **Option B: Default central endpoint**
 
-If a worksheet doesn't have an `npointEndpoint`, the app falls back to `DEFAULT_NPOINT_ENDPOINT` in `public/npoint-config.js` (empty by default — worksheets without an endpoint simply have no leaderboard).
+If a worksheet doesn't have an `npointEndpoint`, the app falls back to `DEFAULT_NPOINT_ENDPOINT` in `docs/npoint-config.js` (empty by default — worksheets without an endpoint simply have no leaderboard).
 
-Set it in `public/npoint-config.js`:
+Set it in `docs/npoint-config.js`:
 ```javascript
 const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/your-default-id";
 ```
@@ -83,8 +83,8 @@ const DEFAULT_NPOINT_ENDPOINT = "https://api.npoint.io/your-default-id";
 
 ## Adding a New Worksheet
 
-1. Create a new JSON file in the `public/data/` directory (see the format below).
-2. Add the filename to the list in `public/data/index.json`.
+1. Create a new JSON file in the `docs/data/` directory (see the format below).
+2. Add the filename to the list in `docs/data/index.json`.
 
 ## Worksheet Format
 

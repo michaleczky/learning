@@ -3,7 +3,7 @@
 // (value prop in, 'update' event out).
 
 import { mount } from '@vue/test-utils';
-import TaskControl from '../public/js/components/TaskControl.js';
+import TaskControl from '../docs/js/components/TaskControl.js';
 
 function mountControl(task, { value = '', ti = 0, ii = 0 } = {}) {
   return mount(TaskControl, { props: { task, ti, ii, value } });

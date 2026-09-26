@@ -3,7 +3,7 @@
 // self-assessment, and solution reveal.
 
 import { mount } from '@vue/test-utils';
-import TaskItem from '../public/js/components/TaskItem.js';
+import TaskItem from '../docs/js/components/TaskItem.js';
 
 const choiceTask = {
   title: 'Choice',

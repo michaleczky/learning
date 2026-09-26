@@ -2,7 +2,7 @@
 // subject and rendering one card per worksheet linking to its route.
 
 import { mount } from '@vue/test-utils';
-import WorksheetList from '../public/js/components/WorksheetList.js';
+import WorksheetList from '../docs/js/components/WorksheetList.js';
 
 const worksheets = [
   { id: 'm1', subject: 'Magyar', title: 'Nyelvtan 1', grade: 2, description: 'Szószerkezetek' },

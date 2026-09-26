@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Local development server for the `public/` site.
+"""Local development server for the `docs/` site.
 
-The stock `python3 -m http.server --directory public` sends no Cache-Control
+The stock `python3 -m http.server --directory docs` sends no Cache-Control
 header, so browsers fall back to heuristic caching and keep showing stale
 JavaScript after files change. This variant sends `Cache-Control: no-cache`,
 which forces the browser to revalidate every file on each load (cheap 304
@@ -24,7 +24,7 @@ class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
 
 def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
-    root = str(Path(__file__).resolve().parent / "public")
+    root = str(Path(__file__).resolve().parent / "docs")
     handler = functools.partial(NoCacheHandler, directory=root)
     server = http.server.ThreadingHTTPServer(("", port), handler)
     print(f"Serving {root} at http://localhost:{port} (browser caching disabled)")

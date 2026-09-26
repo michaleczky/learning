@@ -1,9 +1,9 @@
-// Integration tests for the npoint.io layer (public/npoint-config.js),
+// Integration tests for the npoint.io layer (docs/npoint-config.js),
 // with all HTTP handled by MSW (see mocks/handlers.js).
 
 import { http, HttpResponse } from 'msw';
 import { vi } from 'vitest';
-import * as cfg from '../public/npoint-config.js';
+import * as cfg from '../docs/npoint-config.js';
 import { server } from './mocks/server.js';
 import { captures, leaderboardItems } from './mocks/handlers.js';
 

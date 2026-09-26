@@ -5,8 +5,8 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { http, HttpResponse } from 'msw';
 import { vi } from 'vitest';
-import App from '../public/js/components/App.js';
-import testWorksheet from '../public/data/test-worksheet.json';
+import App from '../docs/js/components/App.js';
+import testWorksheet from '../docs/data/test-worksheet.json';
 import { server } from './mocks/server.js';
 
 // Registered per-test: the global setup's afterEach calls server.resetHandlers(),
