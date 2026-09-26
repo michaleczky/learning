@@ -2,7 +2,7 @@ import { loadSubmissions, submissionLink } from '../utils.js';
 
 export default {
   template: `
-    <section class="submissions-panel" :class="{ hidden: !visible }">
+    <section class="submissions-panel" :class="{ hidden: !active }">
       <h2>Beküldött feladataim</h2>
       <p class="muted">{{ statusMessage }}</p>
       <div class="submissions-list">
@@ -24,26 +24,22 @@ export default {
       </div>
     </section>
   `,
-  props: ['worksheetId'],
+  props: ['worksheetId', 'active'],
   data() {
     return {
-      visible: false,
       submissions: [],
       statusMessage: 'Kattints a Beküldött feladatok gombra a megtekintéshez.'
     };
   },
+  watch: {
+    active(isActive) {
+      if (isActive) {
+        this.loadSubmissions();
+        this.$el.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  },
   methods: {
-    toggle() {
-      this.visible ? this.hide() : this.show();
-    },
-    hide() {
-      this.visible = false;
-    },
-    show() {
-      this.visible = true;
-      this.loadSubmissions();
-      this.$el.scrollIntoView({ block: 'nearest' });
-    },
     loadSubmissions() {
       const allSubmissions = loadSubmissions();
       this.submissions = allSubmissions[this.worksheetId] || [];

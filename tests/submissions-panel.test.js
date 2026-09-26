@@ -1,7 +1,7 @@
-// Unit tests for the SubmissionsPanel component: toggle visibility and
-// listing the submissions recorded in localStorage, each with a clickable
-// link that opens the filled worksheet in the read-only teacher view,
-// plus copying handled through a stubbed clipboard API.
+// Unit tests for the SubmissionsPanel component: activation through the
+// active prop and listing the submissions recorded in localStorage, each
+// with a clickable link that opens the filled worksheet in the read-only
+// teacher view, plus copying handled through a stubbed clipboard API.
 
 import { mount, flushPromises } from '@vue/test-utils';
 import { vi } from 'vitest';
@@ -32,21 +32,21 @@ beforeEach(() => {
   writeText.mockClear();
 });
 
-describe('SubmissionsPanel toggle', () => {
+describe('SubmissionsPanel activation', () => {
   it('starts hidden with an invitation status', () => {
     const wrapper = mountPanel();
     expect(wrapper.find('section').classes()).toContain('hidden');
     expect(wrapper.text()).toContain('Kattints a Beküldött feladatok gombra');
   });
 
-  it('shows on first toggle and hides on the second', async () => {
+  it('shows when activated and hides when deactivated', async () => {
     const wrapper = mountPanel();
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: true });
     await flushPromises();
     expect(wrapper.find('section').classes()).not.toContain('hidden');
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: false });
     expect(wrapper.find('section').classes()).toContain('hidden');
   });
 });
@@ -56,7 +56,7 @@ describe('SubmissionsPanel listing', () => {
     saveSubmission(worksheetId, 'https://api.npoint.io/doc1', 'Anna');
     const wrapper = mountPanel();
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: true });
     await flushPromises();
 
     const items = wrapper.findAll('.submission-item');
@@ -76,7 +76,7 @@ describe('SubmissionsPanel listing', () => {
     saveSubmission('other', 'https://api.npoint.io/doc2', 'Péter');
     const wrapper = mountPanel();
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: true });
     await flushPromises();
 
     const links = wrapper.findAll('a.submission-link');
@@ -88,7 +88,7 @@ describe('SubmissionsPanel listing', () => {
     saveSubmission('other', 'https://api.npoint.io/doc2', 'Péter');
     const wrapper = mountPanel();
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: true });
     await flushPromises();
 
     expect(wrapper.find('.submissions-list .muted').text())
@@ -100,7 +100,7 @@ describe('SubmissionsPanel listing', () => {
     saveSubmission(worksheetId, 'https://api.npoint.io/doc1', 'Anna');
     const wrapper = mountPanel();
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: true });
     await flushPromises();
 
     await wrapper.find('.url-container button').trigger('click');

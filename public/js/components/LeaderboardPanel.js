@@ -2,7 +2,7 @@ import { isNpointConfigured, loadSubmissionsFromNpoint } from '../../npoint-conf
 
 export default {
   template: `
-    <section class="leaderboard-panel" :class="{ hidden: !visible }">
+    <section class="leaderboard-panel" :class="{ hidden: !active }">
       <h2>Ranglista</h2>
       <p class="muted">{{ statusMessage }}</p>
       <ol class="leaderboard-list">
@@ -15,27 +15,27 @@ export default {
       </ol>
     </section>
   `,
-  props: ['worksheet'],
+  props: ['worksheet', 'active', 'version'],
   data() {
     return {
-      visible: false,
       submissions: [],
       statusMessage: 'Kattints a Ranglista gombra a megtekintéshez.',
       isLoading: false
     };
   },
+  watch: {
+    active(isActive) {
+      if (isActive) {
+        this.loadLeaderboard();
+        this.$el.scrollIntoView({ block: 'nearest' });
+      }
+    },
+    version() {
+      // The parent bumps this after a new score is submitted.
+      if (this.active) this.loadLeaderboard();
+    }
+  },
   methods: {
-    toggle() {
-      this.visible ? this.hide() : this.show();
-    },
-    hide() {
-      this.visible = false;
-    },
-    show() {
-      this.visible = true;
-      this.loadLeaderboard();
-      this.$el.scrollIntoView({ block: 'nearest' });
-    },
     async loadLeaderboard() {
       if (!isNpointConfigured(this.worksheet)) {
         this.statusMessage = 'A ranglista nincs beállítva a feladatlaphoz (add npointEndpoint a JSON-hez).';

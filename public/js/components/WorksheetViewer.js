@@ -62,10 +62,10 @@ export default {
       </div>
 
       <div v-show="activeTab === 'leaderboard'">
-        <LeaderboardPanel ref="leaderboard" :worksheet="worksheet" />
+        <LeaderboardPanel :worksheet="worksheet" :active="activeTab === 'leaderboard'" :version="leaderboardVersion" />
       </div>
       <div v-show="activeTab === 'submissions'">
-        <SubmissionsPanel ref="submissions" :worksheetId="worksheet.id" />
+        <SubmissionsPanel :worksheetId="worksheet.id" :active="activeTab === 'submissions'" />
       </div>
 
       <div class="toolbar">
@@ -90,7 +90,8 @@ export default {
       revealed: false,
       activeTab: 'worksheet',
       studentName: getName(),
-      shareUrl: null
+      shareUrl: null,
+      leaderboardVersion: 0
     };
   },
   watch: {
@@ -178,16 +179,11 @@ export default {
         name: name.slice(0, 60),
         score: autoOk,
         max: auto
-      }, this.worksheet).then(() => this.loadLeaderboard()).catch(err => 
+      }, this.worksheet).then(() => this.leaderboardVersion++).catch(err =>
         console.error('Ranglista mentése sikertelen:', err));
-    },
-    loadLeaderboard() {
-      this.$refs.leaderboard.loadLeaderboard();
     },
     showTab(tab) {
       this.activeTab = tab;
-      if (tab === 'leaderboard') this.$refs.leaderboard.show();
-      else if (tab === 'submissions') this.$refs.submissions.show();
     },
     reveal() {
       this.revealed = true;

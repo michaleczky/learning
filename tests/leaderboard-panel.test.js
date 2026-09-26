@@ -1,6 +1,7 @@
-// Unit tests for the LeaderboardPanel component: toggle visibility,
-// loading the npoint.io leaderboard for a configured worksheet, and the
-// status messages for empty and unconfigured leaderboards.
+// Unit tests for the LeaderboardPanel component: activation through the
+// active prop, loading the npoint.io leaderboard for a configured worksheet,
+// reloading when the version prop is bumped, and the status messages for
+// empty and unconfigured leaderboards.
 // HTTP is served by MSW (see mocks/handlers.js), with per-test overrides.
 
 import { mount, flushPromises } from '@vue/test-utils';
@@ -19,21 +20,21 @@ function mountPanel(ws = worksheet) {
   return mount(LeaderboardPanel, { props: { worksheet: ws } });
 }
 
-describe('LeaderboardPanel toggle', () => {
+describe('LeaderboardPanel activation', () => {
   it('starts hidden with an invitation status', () => {
     const wrapper = mountPanel();
     expect(wrapper.find('section').classes()).toContain('hidden');
     expect(wrapper.text()).toContain('Kattints a Ranglista gombra');
   });
 
-  it('shows on first toggle and hides on the second', async () => {
+  it('shows when activated and hides when deactivated', async () => {
     const wrapper = mountPanel();
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: true });
     await flushPromises();
     expect(wrapper.find('section').classes()).not.toContain('hidden');
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: false });
     expect(wrapper.find('section').classes()).toContain('hidden');
   });
 });
@@ -43,7 +44,7 @@ describe('LeaderboardPanel loading', () => {
     server.use(http.get('https://api.npoint.io/ep1', () => HttpResponse.json(items)));
     const wrapper = mountPanel();
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: true });
     await flushPromises();
 
     const rows = wrapper.findAll('.leaderboard-list li');
@@ -59,7 +60,7 @@ describe('LeaderboardPanel loading', () => {
     server.use(http.get('https://api.npoint.io/ep1', () => HttpResponse.json([])));
     const wrapper = mountPanel();
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: true });
     await flushPromises();
 
     expect(wrapper.vm.statusMessage).toBe('Még senki nem töltötte ki ezt a feladatlapot.');
@@ -70,11 +71,27 @@ describe('LeaderboardPanel loading', () => {
     // MSW fails tests on unhandled requests, so a fetch here would error out.
     const wrapper = mountPanel({ id: 'plain', title: 'Plain' });
 
-    await wrapper.vm.toggle();
+    await wrapper.setProps({ active: true });
     await flushPromises();
 
     expect(wrapper.vm.statusMessage).toContain('A ranglista nincs beállítva');
     expect(wrapper.vm.submissions).toEqual([]);
+  });
+
+  it('reloads while active when the version prop is bumped', async () => {
+    server.use(http.get('https://api.npoint.io/ep1', () => HttpResponse.json(items)));
+    const wrapper = mountPanel();
+
+    await wrapper.setProps({ active: true });
+    await flushPromises();
+    expect(wrapper.vm.submissions).toHaveLength(2);
+
+    server.use(http.get('https://api.npoint.io/ep1', () => HttpResponse.json([])));
+    await wrapper.setProps({ version: 1 });
+    await flushPromises();
+
+    expect(wrapper.vm.submissions).toEqual([]);
+    expect(wrapper.vm.statusMessage).toBe('Még senki nem töltötte ki ezt a feladatlapot.');
   });
 
   it('formats the submission date as a localized string', () => {
