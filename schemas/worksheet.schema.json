@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Practice worksheet",
+  "description": "One worksheet JSON file from docs/data/. Also serves as the specification for generating new worksheets.",
+  "type": "object",
+  "required": ["id", "title", "subject", "tasks"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Stable unique identifier. Appears in the URL (#/id) and is the localStorage key for saved answers; it must not change once published. Lowercase letters, digits, hyphens."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Displayed as the worksheet heading and on the list card."
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "description": "School subject; worksheets are grouped by subject on the list page."
+    },
+    "grade": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12,
+      "description": "Optional. Grade level shown as '<grade>. osztály'."
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional. One-line summary shown under the title and on the list card."
+    },
+    "leaderboardNpointDocId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "Optional. npoint.io document ID for this worksheet's leaderboard (the last path segment of the document's API URL). If absent, falls back to DEFAULT_NPOINT_DOC_ID in docs/config.js."
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/task" }
+    }
+  },
+  "$defs": {
+    "richText": {
+      "type": "string",
+      "description": "Plain text. Text wrapped in *asterisks* is rendered in italics; newlines are rendered as line breaks."
+    },
+    "task": {
+      "type": "object",
+      "required": ["title", "instruction", "type", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Task heading."
+        },
+        "instruction": {
+          "$ref": "#/$defs/richText",
+          "description": "Instruction shown above the items."
+        },
+        "hint": {
+          "$ref": "#/$defs/richText",
+          "description": "Optional. Hint shown under the instruction."
+        },
+        "type": {
+          "enum": ["choice", "select", "text", "open"],
+          "description": "choice: radio buttons; select: dropdown; text: text input, auto-graded; open: free text, self-assessed against a sample solution."
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "type": "string" },
+          "description": "Required for choice and select: the offered options. select is preferred when there are many."
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "object" },
+          "description": "The questions of this task. The exact shape depends on the task type; see the per-type rules below."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "choice" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["options"],
+            "properties": {
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["text", "answer"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "text": { "$ref": "#/$defs/richText" },
+                    "answer": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The correct option. Must be one of the task's options."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "select" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["options"],
+            "properties": {
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["text", "answer"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "text": { "$ref": "#/$defs/richText" },
+                    "answer": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The correct option. Must be one of the task's options."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "text" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["text", "answer"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "text": { "$ref": "#/$defs/richText" },
+                    "answer": {
+                      "description": "A single acceptable answer, or a list of acceptable answers. Comparison is case-insensitive and ignores surrounding whitespace and trailing punctuation.",
+                      "oneOf": [
+                        { "type": "string", "minLength": 1 },
+                        { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "open" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["text", "solution"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "text": { "$ref": "#/$defs/richText" },
+                    "solution": {
+                      "$ref": "#/$defs/richText",
+                      "description": "Sample solution shown when checking, for the student to self-assess against."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

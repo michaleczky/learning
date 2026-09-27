@@ -88,6 +88,8 @@ export const DEFAULT_NPOINT_DOC_ID = "your-default-id";
 
 ## Worksheet Format
 
+The machine-readable specification is `schemas/worksheet.schema.json` (JSON Schema, draft 2020-12) — reference it when generating new worksheets with an AI agent, and validate the result against it.
+
 ```json
 {
   "id": "unique-identifier",
