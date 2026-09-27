@@ -1,11 +1,11 @@
 // Integration tests for the npoint.io integration: the API client
-// (docs/js/npoint-api.js) and the configuration (docs/npoint-config.js).
+// (docs/js/api.js) and the configuration (docs/config.js).
 // All HTTP is handled by MSW (see mocks/handlers.js).
 
 import { http, HttpResponse } from 'msw';
 import { vi } from 'vitest';
-import * as api from '../docs/js/npoint-api.js';
-import * as cfg from '../docs/npoint-config.js';
+import * as api from '../docs/js/api.js';
+import * as cfg from '../docs/config.js';
 import { server } from './mocks/server.js';
 import { captures, leaderboardItems } from './mocks/handlers.js';
 

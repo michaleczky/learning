@@ -1,6 +1,6 @@
 // npoint.io configuration: which document belongs to which worksheet.
 // This is the only user-editable file of the npoint.io integration.
-// The HTTP calls live in js/npoint-api.js.
+// The HTTP calls live in js/api.js.
 // 
 // Each worksheet can have its own leaderboard, configured in the worksheet
 // JSON as `leaderboardNpointDocId` (the document ID from the npoint.io API

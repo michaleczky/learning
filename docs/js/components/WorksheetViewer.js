@@ -3,8 +3,8 @@ import LeaderboardPanel from './LeaderboardPanel.js';
 import SubmissionsPanel from './SubmissionsPanel.js';
 import { submissionLink, rich, isCorrect, answerText, itemKey } from '../utils.js';
 import { loadAnswers, saveAnswers, getName, setName, loadSubmissions, saveSubmission } from '../storage.js';
-import { isNpointConfigured } from '../../npoint-config.js';
-import { saveAnswersToNpoint, submitToNpoint } from '../npoint-api.js';
+import { isNpointConfigured } from '../../config.js';
+import { saveAnswersToNpoint, submitToNpoint } from '../api.js';
 
 export default {
   components: { TaskItem, LeaderboardPanel, SubmissionsPanel },

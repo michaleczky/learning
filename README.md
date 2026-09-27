@@ -66,9 +66,9 @@ To create a leaderboard for a worksheet, create a new document in the editor at 
 
 **Option B: Default central endpoint**
 
-If a worksheet doesn't have a `leaderboardNpointDocId`, the app falls back to `DEFAULT_NPOINT_DOC_ID` in `docs/npoint-config.js` (empty by default — worksheets without a document simply have no leaderboard).
+If a worksheet doesn't have a `leaderboardNpointDocId`, the app falls back to `DEFAULT_NPOINT_DOC_ID` in `docs/config.js` (empty by default — worksheets without a document simply have no leaderboard).
 
-Set it in `docs/npoint-config.js`:
+Set it in `docs/config.js`:
 ```javascript
 export const DEFAULT_NPOINT_DOC_ID = "your-default-id";
 ```

@@ -1,8 +1,8 @@
 // npoint.io API client: all HTTP calls to npoint.io live here.
 // Which document to use for each worksheet is configured in
-// npoint-config.js; this module only talks to the network.
+// config.js; this module only talks to the network.
 
-import { npointApiUrl, getEndpointForWorksheet, isNpointConfigured } from '../npoint-config.js';
+import { npointApiUrl, getEndpointForWorksheet, isNpointConfigured } from '../config.js';
 
 // Submit a new submission to the leaderboard
 export async function submitToNpoint(submission, worksheet) {

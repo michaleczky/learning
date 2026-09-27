@@ -1,5 +1,5 @@
-import { isNpointConfigured } from '../../npoint-config.js';
-import { loadSubmissionsFromNpoint } from '../npoint-api.js';
+import { isNpointConfigured } from '../../config.js';
+import { loadSubmissionsFromNpoint } from '../api.js';
 
 export default {
   template: `

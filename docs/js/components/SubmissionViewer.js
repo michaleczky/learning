@@ -1,6 +1,6 @@
 import TaskItem from './TaskItem.js';
 import { rich, isCorrect, itemKey } from '../utils.js';
-import { fetchSubmission } from '../npoint-api.js';
+import { fetchSubmission } from '../api.js';
 
 // Read-only view of a submitted worksheet, opened through a
 // #/view-submission?ws=...&answers=... link sent by the student.
