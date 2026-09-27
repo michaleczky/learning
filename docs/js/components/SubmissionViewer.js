@@ -1,6 +1,6 @@
 import TaskItem from './TaskItem.js';
 import { rich, isCorrect, itemKey } from '../utils.js';
-import { npointApiUrl } from '../../npoint-config.js';
+import { fetchSubmission } from '../npoint-api.js';
 
 // Read-only view of a submitted worksheet, opened through a
 // #/view-submission?ws=...&answers=... link sent by the student.
@@ -103,11 +103,7 @@ export default {
       this.studentName = '';
       this.savedAt = null;
       try {
-        const response = await fetch(npointApiUrl(this.answersDocId));
-        if (!response.ok) {
-          throw new Error(`Failed to load: ${response.status}`);
-        }
-        const data = await response.json();
+        const data = await fetchSubmission(this.answersDocId);
         this.studentName = data.studentName || '';
         this.savedAt = data.savedAt || null;
         this.answers = data.answers || {};

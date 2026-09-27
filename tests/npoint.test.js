@@ -1,8 +1,10 @@
-// Integration tests for the npoint.io layer (docs/npoint-config.js),
-// with all HTTP handled by MSW (see mocks/handlers.js).
+// Integration tests for the npoint.io integration: the API client
+// (docs/js/npoint-api.js) and the configuration (docs/npoint-config.js).
+// All HTTP is handled by MSW (see mocks/handlers.js).
 
 import { http, HttpResponse } from 'msw';
 import { vi } from 'vitest';
+import * as api from '../docs/js/npoint-api.js';
 import * as cfg from '../docs/npoint-config.js';
 import { server } from './mocks/server.js';
 import { captures, leaderboardItems } from './mocks/handlers.js';
@@ -15,7 +17,7 @@ const worksheet = {
 
 describe('saveAnswersToNpoint', () => {
   it('creates a document and saves the answers into it', async () => {
-    const docId = await cfg.saveAnswersToNpoint(worksheet, { '0-0': 'Yes' }, 'Anna');
+    const docId = await api.saveAnswersToNpoint(worksheet, { '0-0': 'Yes' }, 'Anna');
 
     expect(docId).toBe('created1');
     expect(captures.createdDocuments).toEqual([{}]);
@@ -36,7 +38,7 @@ describe('saveAnswersToNpoint', () => {
     );
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const docId = await cfg.saveAnswersToNpoint(worksheet, { '0-0': 'Yes' }, 'Anna');
+    const docId = await api.saveAnswersToNpoint(worksheet, { '0-0': 'Yes' }, 'Anna');
 
     expect(docId).toBeNull();
     expect(captures.savedBodies).toHaveLength(0);
@@ -47,7 +49,7 @@ describe('saveAnswersToNpoint', () => {
 
 describe('submitToNpoint', () => {
   it('appends the new submission to the existing ones and posts the array', async () => {
-    const sub = await cfg.submitToNpoint({ name: 'A', score: 5, max: 10 }, worksheet);
+    const sub = await api.submitToNpoint({ name: 'A', score: 5, max: 10 }, worksheet);
 
     expect(sub.name).toBe('A');
     expect(sub.score).toBe(5);
@@ -71,11 +73,34 @@ describe('loadSubmissionsFromNpoint', () => {
       http.get('https://api.npoint.io/ep1', () => HttpResponse.json(items))
     );
 
-    const subs = await cfg.loadSubmissionsFromNpoint(worksheet);
+    const subs = await api.loadSubmissionsFromNpoint(worksheet);
 
     expect(subs).toHaveLength(20);
     expect(subs[0].score).toBe(24);
     expect(subs[19].score).toBe(5);
+  });
+});
+
+describe('fetchSubmission', () => {
+  it('loads the answers document by its ID', async () => {
+    server.use(
+      http.get('https://api.npoint.io/sub1', () =>
+        HttpResponse.json({ studentName: 'Anna', answers: { '0-0': 'Yes' } })
+      )
+    );
+
+    const data = await api.fetchSubmission('sub1');
+
+    expect(data.studentName).toBe('Anna');
+    expect(data.answers).toEqual({ '0-0': 'Yes' });
+  });
+
+  it('throws when the document cannot be loaded', async () => {
+    server.use(
+      http.get('https://api.npoint.io/sub1', () => new HttpResponse(null, { status: 404 }))
+    );
+
+    await expect(api.fetchSubmission('sub1')).rejects.toThrow('Failed to load: 404');
   });
 });
 
